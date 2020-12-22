@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -27,5 +28,15 @@ public class UsuarioRepositoryTest extends AbstractIntegrationTest {
 		boolean result = repository.existsByEmail("usuario@gmail.com");
 
 		assertTrue(result);
+	}
+
+	@Test
+	public void deveRetornarFalsoQuandoNaoHouverUsuarioComEmail(){
+
+		repository.deleteAll();
+
+		boolean result = repository.existsByEmail("usuario@gmail.com");
+
+		assertFalse(result);
 	}
 }
