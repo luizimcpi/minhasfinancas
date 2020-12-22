@@ -1,4 +1,4 @@
-package com.devlhse.minhasfinancas.model.entity;
+package com.devlhse.minhasfinancas.model.enums;
 
 public enum TipoLancamento {
 

@@ -1,5 +1,7 @@
 package com.devlhse.minhasfinancas.model.entity;
 
+import com.devlhse.minhasfinancas.model.enums.StatusLancamento;
+import com.devlhse.minhasfinancas.model.enums.TipoLancamento;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
