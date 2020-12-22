@@ -2,7 +2,7 @@ package com.devlhse.minhasfinancas.service.impl;
 
 import com.devlhse.minhasfinancas.exception.RegraNegocioException;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
-import com.devlhse.minhasfinancas.repository.UsuarioRepository;
+import com.devlhse.minhasfinancas.model.repository.UsuarioRepository;
 import com.devlhse.minhasfinancas.service.UsuarioService;
 import org.springframework.stereotype.Service;
 
