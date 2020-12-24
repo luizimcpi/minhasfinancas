@@ -7,22 +7,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@SpringBootTest
+
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class UsuarioRepositoryTest extends AbstractIntegrationTest {
 
 	@Autowired
 	UsuarioRepository repository;
 
+	@Autowired
+	TestEntityManager entityManager;
+
 	@Test
 	public void deveVerificarAExistenciaDeUmEmail(){
 		Usuario ususario = Usuario.builder().nome("usuario").email("usuario@gmail.com").build();
-		repository.save(ususario);
+
+		entityManager.persist(ususario);
 
 		boolean result = repository.existsByEmail("usuario@gmail.com");
 
@@ -31,8 +39,6 @@ public class UsuarioRepositoryTest extends AbstractIntegrationTest {
 
 	@Test
 	public void deveRetornarFalsoQuandoNaoHouverUsuarioComEmail(){
-
-		repository.deleteAll();
 
 		boolean result = repository.existsByEmail("usuario@gmail.com");
 
