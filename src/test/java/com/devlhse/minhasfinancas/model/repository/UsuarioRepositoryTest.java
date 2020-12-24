@@ -2,19 +2,20 @@ package com.devlhse.minhasfinancas.model.repository;
 
 import com.devlhse.minhasfinancas.AbstractIntegrationTest;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-@SpringBootTest
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
+@DataJpaTest
+@AutoConfigureTestDatabase
 public class UsuarioRepositoryTest extends AbstractIntegrationTest {
 
 	@Autowired
