@@ -45,7 +45,7 @@ public class UsuarioResource {
             Usuario usuarioAutenticado = service.auntenticar(dto.getEmail(), dto.getSenha());
             return ResponseEntity.ok(usuarioAutenticado);
         }catch (AutenticacaoException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 }
