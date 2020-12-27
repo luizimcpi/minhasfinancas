@@ -3,7 +3,7 @@ CREATE TABLE public.usuario
   id bigserial NOT NULL PRIMARY KEY,
   nome character varying(150),
   email character varying(100),
-  senha character varying(20),
+  senha character varying(200),
   data_cadastro date DEFAULT now()
 );
 

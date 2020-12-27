@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 public class UsuarioServiceTest {
@@ -24,6 +25,9 @@ public class UsuarioServiceTest {
 
 	@Mock
 	UsuarioRepository repository;
+
+	@Mock
+	PasswordEncoder passwordEncoder;
 
 	@Test
 	public void deveValidarEmail(){
@@ -49,6 +53,7 @@ public class UsuarioServiceTest {
 
 		Usuario usuario = Usuario.builder().email(validEmail).senha(senha).id(1l).build();
 		when(repository.findByEmail(validEmail)).thenReturn(Optional.of(usuario));
+		when(passwordEncoder.matches(senha, usuario.getSenha())).thenReturn(true);
 
 		Usuario result = service.auntenticar(validEmail, senha);
 

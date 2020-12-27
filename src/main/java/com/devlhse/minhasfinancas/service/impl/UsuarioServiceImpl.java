@@ -5,17 +5,19 @@ import com.devlhse.minhasfinancas.exception.RegraNegocioException;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.model.repository.UsuarioRepository;
 import com.devlhse.minhasfinancas.service.UsuarioService;
+import java.util.Optional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
+	private PasswordEncoder passwordEncoder;
 	private UsuarioRepository repository;
 
-	public UsuarioServiceImpl(UsuarioRepository repository) {
+	public UsuarioServiceImpl(PasswordEncoder passwordEncoder, UsuarioRepository repository) {
+		this.passwordEncoder = passwordEncoder;
 		this.repository = repository;
 	}
 
@@ -27,7 +29,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			throw new AutenticacaoException("Usuario não encontrado para o email informado.");
 		}
 
-		if(!usuario.get().getSenha().equals(senha)){
+		if(!passwordEncoder.matches(senha, usuario.get().getSenha())){
 			throw new AutenticacaoException("Senha inválida");
 		}
 
@@ -36,7 +38,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	@Transactional
-	public Usuario salvar(Usuario usuario) {
+	public Usuario salvar(Usuario usuarioResource) {
+		Usuario usuario = Usuario.builder()
+				.nome(usuarioResource.getNome())
+				.email(usuarioResource.getEmail())
+				.senha(passwordEncoder.encode(usuarioResource.getSenha()))
+				.build();
 		validarEmail(usuario.getEmail());
 		return repository.save(usuario);
 	}
