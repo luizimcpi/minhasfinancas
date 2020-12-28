@@ -1,5 +1,6 @@
 package com.devlhse.minhasfinancas.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class Usuario {
 	private String email;
 
 	@Column( name = "senha")
+	@JsonIgnore
 	private String senha;
 
 	@Column( name = "data_cadastro")
