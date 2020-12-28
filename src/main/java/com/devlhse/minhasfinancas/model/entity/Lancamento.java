@@ -56,5 +56,4 @@ public class Lancamento {
 	@Column( name = "data_alteracao")
 	@UpdateTimestamp
 	private LocalDateTime dataAlteracao;
-
 }
