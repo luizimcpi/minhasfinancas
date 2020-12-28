@@ -3,6 +3,7 @@ package com.devlhse.minhasfinancas.service.impl;
 import com.devlhse.minhasfinancas.exception.RegraNegocioException;
 import com.devlhse.minhasfinancas.model.entity.Lancamento;
 import com.devlhse.minhasfinancas.model.enums.StatusLancamento;
+import com.devlhse.minhasfinancas.model.enums.TipoLancamento;
 import com.devlhse.minhasfinancas.model.repository.LancamentoRepository;
 import com.devlhse.minhasfinancas.service.LancamentoService;
 import org.springframework.data.domain.Example;
@@ -92,6 +93,18 @@ public class LancamentoServiceImpl implements LancamentoService {
     @Override
     public Optional<Lancamento> obterPorId(Long id) {
         return repository.findById(id);
+    }
+
+    @Override
+    @Transactional
+    public BigDecimal obterSaldoPorUsuario(Long id) {
+        BigDecimal receitas = repository.obterSaldoPorUsuarioETipo(id, TipoLancamento.RECEITA);
+        BigDecimal despesas = repository.obterSaldoPorUsuarioETipo(id, TipoLancamento.DESPESA);
+
+        if(receitas == null) receitas = BigDecimal.ZERO;
+        if(despesas == null) despesas = BigDecimal.ZERO;
+
+        return receitas.subtract(despesas);
     }
 
 }

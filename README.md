@@ -27,3 +27,15 @@ ou
 ```
 ./mvnw test
 ```
+
+## TODO
+```
+- Criar exception handler e remover lógica da camada de resource
+- Adicionar controle com jwt
+- Remover senha da response de usuário
+```
+
+#### Link do curso
+```
+https://www.udemy.com/course/desenvolva-aplicacoes-completas-com-spring-boot-e-react-js/
+```

@@ -3,23 +3,22 @@ package com.devlhse.minhasfinancas.api.resource;
 import com.devlhse.minhasfinancas.api.dto.UsuarioDTO;
 import com.devlhse.minhasfinancas.exception.AutenticacaoException;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
+import com.devlhse.minhasfinancas.service.LancamentoService;
 import com.devlhse.minhasfinancas.service.UsuarioService;
+import java.math.BigDecimal;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/usuarios")
+@RequiredArgsConstructor
 public class UsuarioResource {
 
-    private UsuarioService service;
-
-    public UsuarioResource(UsuarioService service){
-        this.service = service;
-    }
+    private final UsuarioService service;
+    private final LancamentoService lancamentoService;
 
     @PostMapping
     public ResponseEntity salvar(@RequestBody UsuarioDTO dto){
@@ -47,5 +46,17 @@ public class UsuarioResource {
         }catch (AutenticacaoException e){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @GetMapping("{id}/saldo")
+    public ResponseEntity obterSaldo(@PathVariable("id") Long id){
+        Optional<Usuario> usuario = service.obterPorId(id);
+
+        if(usuario.isEmpty()){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
+        BigDecimal saldo = lancamentoService.obterSaldoPorUsuario(id);
+        return ResponseEntity.ok(saldo);
     }
 }
