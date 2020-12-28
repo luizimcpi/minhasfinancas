@@ -142,6 +142,38 @@ public class LancamentoServiceTest {
 		assertTrue(lancamentoEncontrado.isEmpty());
 	}
 
+	@Test
+	public void deveObterSaldo(){
+		when(repository.obterSaldoPorUsuarioETipo(1l, TipoLancamento.RECEITA)).thenReturn(BigDecimal.valueOf(400.00));
+		when(repository.obterSaldoPorUsuarioETipo(1l, TipoLancamento.DESPESA)).thenReturn(BigDecimal.valueOf(100.00));
+		BigDecimal saldo = service.obterSaldoPorUsuario(1l);
+		assertEquals(BigDecimal.valueOf(300.00), saldo);
+	}
+
+	@Test
+	public void deveObterSaldoQuandoNaoExistirReceitas(){
+		when(repository.obterSaldoPorUsuarioETipo(1l, TipoLancamento.RECEITA)).thenReturn(null);
+		when(repository.obterSaldoPorUsuarioETipo(1l, TipoLancamento.DESPESA)).thenReturn(BigDecimal.valueOf(100.00));
+		BigDecimal saldo = service.obterSaldoPorUsuario(1l);
+		assertEquals(BigDecimal.valueOf(-100.00), saldo);
+	}
+
+	@Test
+	public void deveObterSaldoQuandoNaoExistirDespesas(){
+		when(repository.obterSaldoPorUsuarioETipo(1l, TipoLancamento.RECEITA)).thenReturn(BigDecimal.valueOf(400.00));
+		when(repository.obterSaldoPorUsuarioETipo(1l, TipoLancamento.DESPESA)).thenReturn(null);
+		BigDecimal saldo = service.obterSaldoPorUsuario(1l);
+		assertEquals(BigDecimal.valueOf(400.00), saldo);
+	}
+
+	@Test
+	public void deveObterSaldoQuandoNaoExistirReceitasEDespesas(){
+		when(repository.obterSaldoPorUsuarioETipo(1l, TipoLancamento.RECEITA)).thenReturn(null);
+		when(repository.obterSaldoPorUsuarioETipo(1l, TipoLancamento.DESPESA)).thenReturn(null);
+		BigDecimal saldo = service.obterSaldoPorUsuario(1l);
+		assertEquals(BigDecimal.valueOf(0), saldo);
+	}
+
 
 	private Lancamento criarLancamentoValido(){
 
