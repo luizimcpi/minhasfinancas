@@ -1,16 +1,12 @@
 package com.devlhse.minhasfinancas.model.entity;
 
+import java.time.LocalDateTime;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table( name = "usuario", schema = "public")
@@ -34,4 +30,7 @@ public class Usuario {
 	@Column( name = "senha")
 	private String senha;
 
+	@Column( name = "data_cadastro")
+	@CreationTimestamp
+	private LocalDateTime dataCadastro;
 }
