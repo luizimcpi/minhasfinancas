@@ -32,7 +32,6 @@ ou
 ```
 - Criar exception handler e remover lógica da camada de resource
 - Adicionar controle com jwt
-- Remover senha da response de usuário
 ```
 
 #### Link do curso
