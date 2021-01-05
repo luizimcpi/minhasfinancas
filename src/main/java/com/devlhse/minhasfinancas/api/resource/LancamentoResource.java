@@ -9,12 +9,21 @@ import com.devlhse.minhasfinancas.model.enums.StatusLancamento;
 import com.devlhse.minhasfinancas.model.enums.TipoLancamento;
 import com.devlhse.minhasfinancas.service.LancamentoService;
 import com.devlhse.minhasfinancas.service.UsuarioService;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/lancamentos")
@@ -23,6 +32,13 @@ public class LancamentoResource {
 
     private final LancamentoService service;
     private final UsuarioService usuarioService;
+
+    @GetMapping("{id}")
+    public ResponseEntity obterLancamento(@PathVariable("id") Long id){
+        return service.obterPorId(id)
+                .map(lancamento -> new ResponseEntity(converter(lancamento), HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity(HttpStatus.NOT_FOUND));
+    }
 
     @PostMapping
     public ResponseEntity salvar(@RequestBody LancamentoDTO dto){
@@ -98,6 +114,19 @@ public class LancamentoResource {
             }
         }).orElseGet(() ->
                 new ResponseEntity("Lançamento não encontrado na base de Dados.", HttpStatus.NOT_FOUND));
+    }
+
+    private LancamentoDTO converter(Lancamento lancamento){
+        return LancamentoDTO.builder()
+                .id(lancamento.getId())
+                .descricao(lancamento.getDescricao())
+                .valor(lancamento.getValor())
+                .mes(lancamento.getMes())
+                .ano(lancamento.getAno())
+                .status(lancamento.getStatus().name())
+                .tipo(lancamento.getTipo().name())
+                .usuario(lancamento.getUsuario().getId())
+                .build();
     }
 
     private Lancamento converter(LancamentoDTO dto){
