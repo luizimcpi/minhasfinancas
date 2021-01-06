@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.devlhse.minhasfinancas.model.entity.CustomUserDetails;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,8 +19,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static com.devlhse.minhasfinancas.api.constants.SecurityConstants.EXPIRATION_TIME;
-import static com.devlhse.minhasfinancas.api.constants.SecurityConstants.SECRET;
+import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.EXPIRATION_TIME;
+import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.JWT_SECRET;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -57,11 +58,27 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String token = JWT.create()
                 .withSubject(((CustomUserDetails) auth.getPrincipal()).getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .sign(Algorithm.HMAC512(SECRET.getBytes()));
+                .sign(Algorithm.HMAC512(JWT_SECRET.getBytes()));
 
-        String body = ((CustomUserDetails) auth.getPrincipal()).getUsuario().toString() + " " + token;
+//        String body = ((CustomUserDetails) auth.getPrincipal()).getUsuario().toString() + " " + token;
 
-        res.getWriter().write(body);
+        Long id = ((CustomUserDetails) auth.getPrincipal()).getUsuario().getId();
+        String nome = ((CustomUserDetails) auth.getPrincipal()).getUsuario().getNome();
+        String email = ((CustomUserDetails) auth.getPrincipal()).getUsuario().getEmail();
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode userTokenResponse = mapper.createObjectNode();
+        userTokenResponse.put("id", id);
+        userTokenResponse.put("nome", nome);
+        userTokenResponse.put("email", email);
+        userTokenResponse.put("accessToken", token);
+
+
+        // convert `ObjectNode` to pretty-print JSON
+        // without pretty-print, use `user.toString()` method
+        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userTokenResponse);
+
+        res.getWriter().write(json);
         res.getWriter().flush();
     }
 }

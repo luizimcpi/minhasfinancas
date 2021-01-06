@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.devlhse.minhasfinancas.api.constants.SecurityConstants.*;
+import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.HEADER_STRING;
+import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.JWT_SECRET;
+import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.TOKEN_PREFIX;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -45,7 +47,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
         if (token != null) {
             // parse the token.
-            String user = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
+            String user = JWT.require(Algorithm.HMAC512(JWT_SECRET.getBytes()))
                     .build()
                     .verify(token.replace(TOKEN_PREFIX, ""))
                     .getSubject();

@@ -1,8 +1,9 @@
-package com.devlhse.minhasfinancas.api.constants;
+package com.devlhse.minhasfinancas.security.constants;
+
 
 public class SecurityConstants {
 
-    public static final String SECRET = "SECRET_KEY";
+    public static final String JWT_SECRET = "05b1fa66-e62a-4c59-8bf2-37bc16390f20";
     public static final long EXPIRATION_TIME = 3_600_000; // 60 mins
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
