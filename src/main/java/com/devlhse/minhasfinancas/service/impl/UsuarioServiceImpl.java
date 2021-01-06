@@ -5,10 +5,11 @@ import com.devlhse.minhasfinancas.exception.RegraNegocioException;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.model.repository.UsuarioRepository;
 import com.devlhse.minhasfinancas.service.UsuarioService;
-import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -20,6 +21,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		this.passwordEncoder = passwordEncoder;
 		this.repository = repository;
 	}
+
 
 	@Override
 	public Usuario auntenticar(String email, String senha) {
@@ -43,6 +45,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 				.nome(usuarioResource.getNome())
 				.email(usuarioResource.getEmail())
 				.senha(passwordEncoder.encode(usuarioResource.getSenha()))
+				.senha(usuarioResource.getSenha())
 				.build();
 		validarEmail(usuario.getEmail());
 		return repository.save(usuario);
