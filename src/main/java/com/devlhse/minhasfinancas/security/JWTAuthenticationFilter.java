@@ -60,8 +60,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(JWT_SECRET.getBytes()));
 
-//        String body = ((CustomUserDetails) auth.getPrincipal()).getUsuario().toString() + " " + token;
-
         Long id = ((CustomUserDetails) auth.getPrincipal()).getUsuario().getId();
         String nome = ((CustomUserDetails) auth.getPrincipal()).getUsuario().getNome();
         String email = ((CustomUserDetails) auth.getPrincipal()).getUsuario().getEmail();
@@ -73,11 +71,10 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         userTokenResponse.put("email", email);
         userTokenResponse.put("accessToken", token);
 
-
-        // convert `ObjectNode` to pretty-print JSON
-        // without pretty-print, use `user.toString()` method
         String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userTokenResponse);
 
+        res.setContentType("application/json");
+        res.setCharacterEncoding("UTF-8");
         res.getWriter().write(json);
         res.getWriter().flush();
     }
