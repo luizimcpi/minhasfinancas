@@ -1,7 +1,8 @@
-package com.devlhse.minhasfinancas.api.resource;
+package com.devlhse.minhasfinancas.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.devlhse.minhasfinancas.model.entity.CustomUserDetails;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -54,11 +55,11 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             FilterChain chain,
                                             Authentication auth) throws IOException {
         String token = JWT.create()
-                .withSubject(((Usuario) auth.getPrincipal()).getEmail())
+                .withSubject(((CustomUserDetails) auth.getPrincipal()).getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(SECRET.getBytes()));
 
-        String body = ((Usuario) auth.getPrincipal()).getEmail() + " " + token;
+        String body = ((CustomUserDetails) auth.getPrincipal()).getUsuario().toString() + " " + token;
 
         res.getWriter().write(body);
         res.getWriter().flush();

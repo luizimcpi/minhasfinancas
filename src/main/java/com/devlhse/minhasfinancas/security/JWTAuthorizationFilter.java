@@ -1,4 +1,4 @@
-package com.devlhse.minhasfinancas.api.resource;
+package com.devlhse.minhasfinancas.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

@@ -1,11 +1,10 @@
 package com.devlhse.minhasfinancas.config;
 
-import com.devlhse.minhasfinancas.api.resource.JWTAuthenticationFilter;
-import com.devlhse.minhasfinancas.api.resource.JWTAuthorizationFilter;
+import com.devlhse.minhasfinancas.security.JWTAuthenticationFilter;
+import com.devlhse.minhasfinancas.security.JWTAuthorizationFilter;
 import com.devlhse.minhasfinancas.service.impl.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,12 +23,9 @@ import static com.devlhse.minhasfinancas.api.constants.SecurityConstants.SIGN_UP
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private UserDetailsServiceImpl userDetailsService;
-//    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-//    public WebSecurityConfig(UserDetailsServiceImpl userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
     public WebSecurityConfig(UserDetailsServiceImpl userService) {
         this.userDetailsService = userService;
-//        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Bean
@@ -39,8 +35,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().authorizeRequests()
-                .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+        http.csrf().disable().authorizeRequests()
+                .antMatchers(SIGN_UP_URL).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
