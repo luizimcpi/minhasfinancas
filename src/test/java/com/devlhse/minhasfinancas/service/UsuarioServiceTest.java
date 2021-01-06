@@ -1,21 +1,23 @@
 package com.devlhse.minhasfinancas.service;
 
-import com.devlhse.minhasfinancas.exception.AutenticacaoException;
 import com.devlhse.minhasfinancas.exception.RegraNegocioException;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.model.repository.UsuarioRepository;
 import com.devlhse.minhasfinancas.service.impl.UsuarioServiceImpl;
-import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UsuarioServiceTest {
@@ -43,42 +45,6 @@ public class UsuarioServiceTest {
 		when(repository.existsByEmail(validEmail)).thenReturn(true);
 		Assertions.assertThrows(RegraNegocioException.class, () -> {
 			service.validarEmail(validEmail);
-		});
-	}
-
-	@Test
-	public void deveAutenticarUsuarioComSucesso(){
-		String validEmail = "email@email.com";
-		String senha = "senha";
-
-		Usuario usuario = Usuario.builder().email(validEmail).senha(senha).id(1l).build();
-		when(repository.findByEmail(validEmail)).thenReturn(Optional.of(usuario));
-		when(passwordEncoder.matches(senha, usuario.getSenha())).thenReturn(true);
-
-		Usuario result = service.auntenticar(validEmail, senha);
-
-		Assertions.assertNotNull(result);
-	}
-
-	@Test
-	public void deveLancarErroQuandoNaoEncontrarUsuarioCadastradoComEmailInformado(){
-		when(repository.findByEmail(anyString())).thenReturn(Optional.empty());
-
-		Assertions.assertThrows(AutenticacaoException.class, () -> {
-			service.auntenticar("email@email.com", "senha");
-		});
-	}
-
-	@Test
-	public void deveLancarErroQuandoNaoEncontrarUsuarioCadastradoComSenhaInformada(){
-		String validEmail = "email@email.com";
-		String senha = "senha";
-
-		Usuario usuario = Usuario.builder().email(validEmail).senha(senha).id(1l).build();
-		when(repository.findByEmail(validEmail)).thenReturn(Optional.of(usuario));
-
-		Assertions.assertThrows(AutenticacaoException.class, () -> {
-			service.auntenticar("email@email.com", "senhaInvalida");
 		});
 	}
 

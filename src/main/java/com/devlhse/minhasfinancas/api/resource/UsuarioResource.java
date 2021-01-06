@@ -37,17 +37,6 @@ public class UsuarioResource {
        }
     }
 
-//    @PostMapping("/autenticar")
-//    public ResponseEntity autenticar(@RequestBody UsuarioDTO dto){
-//
-//        try {
-//            Usuario usuarioAutenticado = service.auntenticar(dto.getEmail(), dto.getSenha());
-//            return ResponseEntity.ok(usuarioAutenticado);
-//        }catch (AutenticacaoException e){
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//    }
-
     @GetMapping("{id}/saldo")
     public ResponseEntity obterSaldo(@PathVariable("id") Long id){
         Optional<Usuario> usuario = service.obterPorId(id);
