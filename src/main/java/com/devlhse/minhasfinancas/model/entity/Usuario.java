@@ -1,13 +1,18 @@
 package com.devlhse.minhasfinancas.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDateTime;
-import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Table( name = "usuario", schema = "public")
@@ -29,7 +34,6 @@ public class Usuario {
 	private String email;
 
 	@Column( name = "senha")
-	@JsonIgnore
 	private String senha;
 
 	@Column( name = "data_cadastro")

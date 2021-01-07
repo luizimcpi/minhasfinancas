@@ -1,14 +1,14 @@
 package com.devlhse.minhasfinancas.service.impl;
 
-import com.devlhse.minhasfinancas.exception.AutenticacaoException;
 import com.devlhse.minhasfinancas.exception.RegraNegocioException;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.model.repository.UsuarioRepository;
 import com.devlhse.minhasfinancas.service.UsuarioService;
-import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -19,21 +19,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public UsuarioServiceImpl(PasswordEncoder passwordEncoder, UsuarioRepository repository) {
 		this.passwordEncoder = passwordEncoder;
 		this.repository = repository;
-	}
-
-	@Override
-	public Usuario auntenticar(String email, String senha) {
-		Optional<Usuario> usuario = repository.findByEmail(email);
-
-		if(!usuario.isPresent()){
-			throw new AutenticacaoException("Usuario não encontrado para o email informado.");
-		}
-
-		if(!passwordEncoder.matches(senha, usuario.get().getSenha())){
-			throw new AutenticacaoException("Senha inválida");
-		}
-
-		return usuario.get();
 	}
 
 	@Override
