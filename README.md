@@ -28,12 +28,17 @@ ou
 ./mvnw test
 ```
 
+### Como gerar pacote para deploy 
+```
+./mvnw clean package
+```
+
 ## TODO
 ```
 - Criar exception handler e remover lógica da camada de resource
-- Adicionar controle com jwt
 - Criar logs e rastreabilidade com ELK
 ```
+
 
 #### Link do curso
 ```
