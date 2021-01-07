@@ -2,6 +2,7 @@ package com.devlhse.minhasfinancas.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.devlhse.minhasfinancas.config.JwtConfig;
 import com.devlhse.minhasfinancas.model.entity.CustomUserDetails;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,14 +21,16 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.EXPIRATION_TIME;
-import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.JWT_SECRET;
+
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private AuthenticationManager authenticationManager;
+    private JwtConfig jwtConfig;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, JwtConfig jwtConfig) {
         this.authenticationManager = authenticationManager;
+        this.jwtConfig = jwtConfig;
 
         setFilterProcessesUrl("/api/usuarios/autenticar");
     }
@@ -58,7 +61,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String token = JWT.create()
                 .withSubject(((CustomUserDetails) auth.getPrincipal()).getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .sign(Algorithm.HMAC512(JWT_SECRET.getBytes()));
+                .sign(Algorithm.HMAC512(jwtConfig.getJwtSecret().getBytes()));
 
         Long id = ((CustomUserDetails) auth.getPrincipal()).getUsuario().getId();
         String nome = ((CustomUserDetails) auth.getPrincipal()).getUsuario().getNome();

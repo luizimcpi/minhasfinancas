@@ -25,9 +25,11 @@ import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.SI
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private UserDetailsServiceImpl userDetailsService;
+    private JwtConfig jwtConfig;
 
-    public WebSecurityConfig(UserDetailsServiceImpl userService) {
+    public WebSecurityConfig(UserDetailsServiceImpl userService, JwtConfig jwtConfig) {
         this.userDetailsService = userService;
+        this.jwtConfig = jwtConfig;
     }
 
     @Bean
@@ -41,8 +43,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(SIGN_UP_URL, SIGN_UP_URL_WITH_ROOT).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new JWTAuthenticationFilter(authenticationManager()))
-                .addFilter(new JWTAuthorizationFilter(authenticationManager()))
+                .addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtConfig))
+                .addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtConfig))
                 // this disables session creation on Spring Security
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }

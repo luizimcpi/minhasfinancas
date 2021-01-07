@@ -2,6 +2,7 @@ package com.devlhse.minhasfinancas.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.devlhse.minhasfinancas.config.JwtConfig;
 import com.devlhse.minhasfinancas.exception.AutenticacaoException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,13 +17,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.HEADER_STRING;
-import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.JWT_SECRET;
 import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.TOKEN_PREFIX;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-    public JWTAuthorizationFilter(AuthenticationManager authManager) {
+    private JwtConfig jwtConfig;
+
+    public JWTAuthorizationFilter(AuthenticationManager authManager, JwtConfig jwtConfig) {
         super(authManager);
+        this.jwtConfig = jwtConfig;
     }
 
     @Override
@@ -48,7 +51,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
         if (token != null) {
             // parse the token.
-            String user = JWT.require(Algorithm.HMAC512(JWT_SECRET.getBytes()))
+            String user = JWT.require(Algorithm.HMAC512(jwtConfig.getJwtSecret().getBytes()))
                     .build()
                     .verify(token.replace(TOKEN_PREFIX, ""))
                     .getSubject();
