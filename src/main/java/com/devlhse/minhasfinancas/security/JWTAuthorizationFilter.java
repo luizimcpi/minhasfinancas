@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.devlhse.minhasfinancas.config.JwtConfig;
 import com.devlhse.minhasfinancas.exception.AutenticacaoException;
+import com.devlhse.minhasfinancas.exception.AutorizacaoException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,8 +49,9 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     // Reads the JWT from the Authorization header, and then uses JWT to validate the token
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) throws IOException {
         String token = request.getHeader(HEADER_STRING);
+        String usuarioIdHeader = request.getHeader("usuarioId");
 
-        if (token != null) {
+        if (token != null && usuarioIdHeader != null) {
             // parse the token.
             String loggedUser = JWT.require(Algorithm.HMAC512(jwtConfig.getJwtSecret().getBytes()))
                     .build()
@@ -57,8 +59,9 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                     .getSubject();
 
             if (loggedUser != null) {
-                queryParameterUserValidations(request, loggedUser);
-
+                if(!loggedUser.equals(usuarioIdHeader)){
+                    throw new AutorizacaoException("Send valid user id in header.");
+                }
                 // new arraylist means authorities
                 return new UsernamePasswordAuthenticationToken(loggedUser, null, new ArrayList<>());
             }
@@ -66,19 +69,6 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             return null;
         }
 
-        throw new AutenticacaoException("Send JWT Token in header.");
-    }
-
-
-    private void queryParameterUserValidations(HttpServletRequest request, String user) {
-        var queryString = request.getQueryString();
-        if(queryString != null && queryString.contains("usuario")){
-            var array = queryString.split("=");
-            var arrayWithValues = array[1].split("&");
-            var userCode = arrayWithValues[0];
-            if(userCode != null && !user.equals(userCode)){
-                throw new AutenticacaoException("Invalid user request for JWT Token!");
-            }
-        }
+        throw new AutenticacaoException("Send JWT Token and user id in header.");
     }
 }

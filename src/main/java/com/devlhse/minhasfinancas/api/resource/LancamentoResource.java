@@ -2,6 +2,7 @@ package com.devlhse.minhasfinancas.api.resource;
 
 import com.devlhse.minhasfinancas.api.dto.LancamentoDTO;
 import com.devlhse.minhasfinancas.api.dto.LancamentoStatusDTO;
+import com.devlhse.minhasfinancas.exception.AutorizacaoException;
 import com.devlhse.minhasfinancas.exception.RegraNegocioException;
 import com.devlhse.minhasfinancas.model.entity.Lancamento;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
@@ -12,15 +13,7 @@ import com.devlhse.minhasfinancas.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,16 +27,22 @@ public class LancamentoResource {
     private final UsuarioService usuarioService;
 
     @GetMapping("{id}")
-    public ResponseEntity obterLancamento(@PathVariable("id") Long id){
-        return service.obterPorId(id)
-                .map(lancamento -> new ResponseEntity(converter(lancamento), HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity(HttpStatus.NOT_FOUND));
+    public ResponseEntity obterLancamento(@PathVariable("id") Long id,
+                                          @RequestHeader("usuarioId") Long usuarioId){
+        try {
+            return service.obterPorId(id)
+                    .map(lancamento -> new ResponseEntity(converter(lancamento, usuarioId), HttpStatus.OK))
+                    .orElseGet(() -> new ResponseEntity(HttpStatus.NOT_FOUND));
+        } catch (AutorizacaoException e){
+            return ResponseEntity.notFound().build();
+        }
+
     }
 
     @PostMapping
-    public ResponseEntity salvar(@RequestBody LancamentoDTO dto){
+    public ResponseEntity salvar(@RequestHeader("usuarioId") Long usuarioId, @RequestBody LancamentoDTO dto){
         try {
-            Lancamento lancamento = converter(dto);
+            Lancamento lancamento = converter(dto, usuarioId);
             lancamento = service.salvar(lancamento);
             return new ResponseEntity(lancamento, HttpStatus.CREATED);
         } catch (RegraNegocioException e){
@@ -52,10 +51,10 @@ public class LancamentoResource {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity atualizar(@PathVariable("id") Long id, @RequestBody LancamentoDTO dto) {
+    public ResponseEntity atualizar(@RequestHeader("usuarioId") Long usuarioId, @PathVariable("id") Long id, @RequestBody LancamentoDTO dto) {
         return service.obterPorId(id).map(entity -> {
             try {
-                Lancamento lancamento = converter(dto);
+                Lancamento lancamento = converter(dto, usuarioId);
                 lancamento.setId(entity.getId());
                 lancamento.setDataCadastro(entity.getDataCadastro());
                 service.atualizar(lancamento);
@@ -68,7 +67,7 @@ public class LancamentoResource {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity deletar(@PathVariable("id") Long id){
+    public ResponseEntity deletar(@RequestHeader("usuarioId") Long usuarioId, @PathVariable("id") Long id){
         return service.obterPorId(id).map(entity -> {
             service.deletar(entity);
             return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -80,14 +79,14 @@ public class LancamentoResource {
     public ResponseEntity buscar(@RequestParam(value = "descricao", required = false) String descricao,
                                  @RequestParam(value = "mes", required = false) Integer mes,
                                  @RequestParam(value = "ano", required = false) Integer ano,
-                                 @RequestParam("usuario") Long idUsuario){
+                                 @RequestHeader("usuarioId") Long usuarioId){
 
         Lancamento lancamentoFiltro = new Lancamento();
         lancamentoFiltro.setDescricao(descricao);
         lancamentoFiltro.setMes(mes);
         lancamentoFiltro.setAno(ano);
 
-        Optional<Usuario> usuario = usuarioService.obterPorId(idUsuario);
+        Optional<Usuario> usuario = usuarioService.obterPorId(usuarioId);
         if(usuario.isEmpty()){
             return ResponseEntity.badRequest().body("Usuário não encontrado para o Id informado.");
         }else{
@@ -100,7 +99,7 @@ public class LancamentoResource {
     }
 
     @PutMapping("{id}/status")
-    public ResponseEntity atualizarStatus( @PathVariable("id") Long id, @RequestBody LancamentoStatusDTO dto){
+    public ResponseEntity atualizarStatus( @RequestHeader("usuarioId") Long usuarioId, @PathVariable("id") Long id, @RequestBody LancamentoStatusDTO dto){
         return service.obterPorId(id).map(entity -> {
             StatusLancamento statusSelecionado = StatusLancamento.valueOf(dto.getStatus());
             if(statusSelecionado == null){
@@ -117,7 +116,10 @@ public class LancamentoResource {
                 new ResponseEntity("Lançamento não encontrado na base de Dados.", HttpStatus.NOT_FOUND));
     }
 
-    private LancamentoDTO converter(Lancamento lancamento){
+    private LancamentoDTO converter(Lancamento lancamento, Long usuarioId){
+        if(!lancamento.getUsuario().getId().equals(usuarioId)){
+            throw new AutorizacaoException("Usuário sem permissão para acessar o recurso.");
+        }
         return LancamentoDTO.builder()
                 .id(lancamento.getId())
                 .descricao(lancamento.getDescricao())
@@ -126,11 +128,10 @@ public class LancamentoResource {
                 .ano(lancamento.getAno())
                 .status(lancamento.getStatus().name())
                 .tipo(lancamento.getTipo().name())
-                .usuario(lancamento.getUsuario().getId())
                 .build();
     }
 
-    private Lancamento converter(LancamentoDTO dto){
+    private Lancamento converter(LancamentoDTO dto, Long usuarioId){
         Lancamento lancamento = new Lancamento();
         lancamento.setId(dto.getId());
         lancamento.setDescricao(dto.getDescricao());
@@ -138,7 +139,7 @@ public class LancamentoResource {
         lancamento.setMes(dto.getMes());
         lancamento.setValor(dto.getValor());
 
-        Usuario usuario = usuarioService.obterPorId(dto.getUsuario())
+        Usuario usuario = usuarioService.obterPorId(usuarioId)
                 .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado para id informado."));
 
         lancamento.setUsuario(usuario);
