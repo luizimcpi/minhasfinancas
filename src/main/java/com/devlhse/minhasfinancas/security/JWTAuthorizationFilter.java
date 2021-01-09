@@ -46,24 +46,39 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     // Reads the JWT from the Authorization header, and then uses JWT to validate the token
-    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
+    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) throws IOException {
         String token = request.getHeader(HEADER_STRING);
 
         if (token != null) {
             // parse the token.
-            String user = JWT.require(Algorithm.HMAC512(jwtConfig.getJwtSecret().getBytes()))
+            String loggedUser = JWT.require(Algorithm.HMAC512(jwtConfig.getJwtSecret().getBytes()))
                     .build()
                     .verify(token.replace(TOKEN_PREFIX, ""))
                     .getSubject();
 
-            if (user != null) {
+            if (loggedUser != null) {
+                queryParameterUserValidations(request, loggedUser);
+
                 // new arraylist means authorities
-                return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                return new UsernamePasswordAuthenticationToken(loggedUser, null, new ArrayList<>());
             }
 
             return null;
         }
 
         throw new AutenticacaoException("Send JWT Token in header.");
+    }
+
+
+    private void queryParameterUserValidations(HttpServletRequest request, String user) {
+        var queryString = request.getQueryString();
+        if(queryString != null && queryString.contains("usuario")){
+            var array = queryString.split("=");
+            var arrayWithValues = array[1].split("&");
+            var userCode = arrayWithValues[0];
+            if(userCode != null && !user.equals(userCode)){
+                throw new AutenticacaoException("Invalid user request for JWT Token!");
+            }
+        }
     }
 }
