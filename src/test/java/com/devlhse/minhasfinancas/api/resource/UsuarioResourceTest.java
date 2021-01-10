@@ -7,6 +7,7 @@ import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.service.LancamentoService;
 import com.devlhse.minhasfinancas.service.UsuarioService;
 import com.devlhse.minhasfinancas.service.impl.UserDetailsServiceImpl;
+import java.util.UUID;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class UsuarioResourceTest {
     @Test
     public void deveCriarUmUsuario() throws Exception {
         UsuarioDTO dto = UsuarioDTO.builder().nome(NOME_VALIDO).email(EMAIL_VALIDO).senha(SENHA_VALIDA).build();
-        Usuario usuario = Usuario.builder().id(1l).nome(NOME_VALIDO).email(EMAIL_VALIDO).senha(SENHA_VALIDA).build();
+        Usuario usuario = Usuario.builder().id(UUID.randomUUID()).nome(NOME_VALIDO).email(EMAIL_VALIDO).senha(SENHA_VALIDA).build();
 
         when(service.salvar(any(Usuario.class))).thenReturn(usuario);
 
@@ -68,7 +69,7 @@ public class UsuarioResourceTest {
 
         mvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("id").value(usuario.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("id").value(usuario.getId().toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("nome").value(usuario.getNome()))
                 .andExpect(MockMvcResultMatchers.jsonPath("email").value(usuario.getEmail()));
     }

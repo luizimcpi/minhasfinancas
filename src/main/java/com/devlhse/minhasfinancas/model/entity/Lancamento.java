@@ -4,12 +4,14 @@ import com.devlhse.minhasfinancas.model.enums.StatusLancamento;
 import com.devlhse.minhasfinancas.model.enums.TipoLancamento;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
@@ -21,9 +23,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 public class Lancamento {
 
 	@Id
-	@GeneratedValue( strategy = GenerationType.IDENTITY)
+	@GeneratedValue(generator = "UUID")
+	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
 	@Column( name = "id")
-	private Long id;
+	private UUID id;
 
 	@Column( name = "descricao")
 	private String descricao;

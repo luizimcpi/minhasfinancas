@@ -4,11 +4,11 @@ import com.devlhse.minhasfinancas.exception.RegraNegocioException;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.model.repository.UsuarioRepository;
 import com.devlhse.minhasfinancas.service.UsuarioService;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -42,7 +42,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public Optional<Usuario> obterPorId(Long id) {
+	public Optional<Usuario> obterPorId(UUID id) {
 		return repository.findById(id);
 	}
 }

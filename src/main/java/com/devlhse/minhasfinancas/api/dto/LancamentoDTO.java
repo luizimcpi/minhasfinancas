@@ -1,15 +1,15 @@
 package com.devlhse.minhasfinancas.api.dto;
 
+import java.math.BigDecimal;
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Data;
-
-import java.math.BigDecimal;
 
 @Data
 @Builder
 public class LancamentoDTO {
 
-    private Long id;
+    private UUID id;
     private String descricao;
     private Integer mes;
     private Integer ano;

@@ -63,7 +63,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(jwtConfig.getJwtSecret().getBytes()));
 
-        Long id = ((CustomUserDetails) auth.getPrincipal()).getUsuario().getId();
+        String id = ((CustomUserDetails) auth.getPrincipal()).getUsuario().getId().toString();
         String nome = ((CustomUserDetails) auth.getPrincipal()).getUsuario().getNome();
         String email = ((CustomUserDetails) auth.getPrincipal()).getUsuario().getEmail();
 

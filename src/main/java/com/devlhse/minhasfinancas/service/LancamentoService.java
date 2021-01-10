@@ -2,10 +2,10 @@ package com.devlhse.minhasfinancas.service;
 
 import com.devlhse.minhasfinancas.model.entity.Lancamento;
 import com.devlhse.minhasfinancas.model.enums.StatusLancamento;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface LancamentoService {
 
@@ -21,7 +21,7 @@ public interface LancamentoService {
 
     void validar(Lancamento lancamento);
 
-    Optional<Lancamento> obterPorId(Long id);
+    Optional<Lancamento> obterPorId(UUID id);
 
-    BigDecimal obterSaldoPorUsuario(Long id);
+    BigDecimal obterSaldoPorUsuario(UUID id);
 }

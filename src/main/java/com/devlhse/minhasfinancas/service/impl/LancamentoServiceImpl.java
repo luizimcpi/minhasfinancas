@@ -6,15 +6,15 @@ import com.devlhse.minhasfinancas.model.enums.StatusLancamento;
 import com.devlhse.minhasfinancas.model.enums.TipoLancamento;
 import com.devlhse.minhasfinancas.model.repository.LancamentoRepository;
 import com.devlhse.minhasfinancas.service.LancamentoService;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+import javax.transaction.Transactional;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.stereotype.Service;
 
 @Service
 public class LancamentoServiceImpl implements LancamentoService {
@@ -91,13 +91,13 @@ public class LancamentoServiceImpl implements LancamentoService {
     }
 
     @Override
-    public Optional<Lancamento> obterPorId(Long id) {
+    public Optional<Lancamento> obterPorId(UUID id) {
         return repository.findById(id);
     }
 
     @Override
     @Transactional
-    public BigDecimal obterSaldoPorUsuario(Long id) {
+    public BigDecimal obterSaldoPorUsuario(UUID id) {
         BigDecimal receitas = repository.obterSaldoPorUsuarioETipoEStatus(
                 id,
                 TipoLancamento.RECEITA,
