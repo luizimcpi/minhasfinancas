@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.devlhse.minhasfinancas.config.JwtConfig;
 import com.devlhse.minhasfinancas.exception.AutenticacaoException;
 import com.devlhse.minhasfinancas.exception.AutorizacaoException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 
 import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.*;
 
+@Slf4j
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     private JwtConfig jwtConfig;
@@ -59,6 +61,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
             if (loggedUser != null) {
                 if(usuarioIdHeader != null && !loggedUser.equals(usuarioIdHeader)){
+                    log.error("Tentativa de acesso de usuário com token diferente do usuario id solicitado.");
                     throw new AutorizacaoException("Send valid user id in header.");
                 }
                 // new arraylist means authorities
