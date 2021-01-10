@@ -4,13 +4,13 @@ import com.devlhse.minhasfinancas.api.dto.UsuarioDTO;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.service.LancamentoService;
 import com.devlhse.minhasfinancas.service.UsuarioService;
+import java.math.BigDecimal;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -38,7 +38,7 @@ public class UsuarioResource {
     }
 
     @GetMapping("saldo")
-    public ResponseEntity obterSaldo(@RequestHeader("usuarioId") Long usuarioId){
+    public ResponseEntity obterSaldo(@RequestHeader("usuarioId") UUID usuarioId){
         Optional<Usuario> usuario = service.obterPorId(usuarioId);
 
         if(usuario.isEmpty()){

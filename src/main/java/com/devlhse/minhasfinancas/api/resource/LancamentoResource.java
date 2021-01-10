@@ -10,14 +10,14 @@ import com.devlhse.minhasfinancas.model.enums.StatusLancamento;
 import com.devlhse.minhasfinancas.model.enums.TipoLancamento;
 import com.devlhse.minhasfinancas.service.LancamentoService;
 import com.devlhse.minhasfinancas.service.UsuarioService;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/lancamentos")
@@ -29,8 +29,8 @@ public class LancamentoResource {
     private final UsuarioService usuarioService;
 
     @GetMapping("{id}")
-    public ResponseEntity obterLancamento(@PathVariable("id") Long id,
-                                          @RequestHeader("usuarioId") Long usuarioId){
+    public ResponseEntity obterLancamento(@PathVariable("id") UUID id,
+                                          @RequestHeader("usuarioId") UUID usuarioId){
         log.debug("Iniciando busca de lançamento com id: {} e usuarioId: {}", id, usuarioId);
         try {
             return service.obterPorId(id)
@@ -43,7 +43,7 @@ public class LancamentoResource {
     }
 
     @PostMapping
-    public ResponseEntity salvar(@RequestHeader("usuarioId") Long usuarioId,
+    public ResponseEntity salvar(@RequestHeader("usuarioId") UUID usuarioId,
                                  @RequestBody LancamentoDTO dto){
         log.debug("Iniciando cadastro de lançamento para usuarioId: {}", usuarioId);
         try {
@@ -57,8 +57,8 @@ public class LancamentoResource {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity atualizar(@RequestHeader("usuarioId") Long usuarioId,
-                                    @PathVariable("id") Long id,
+    public ResponseEntity atualizar(@RequestHeader("usuarioId") UUID usuarioId,
+                                    @PathVariable("id") UUID id,
                                     @RequestBody LancamentoDTO dto) {
         log.debug("Iniciando alteração de lançamento id: {} para usuarioId: {}", id, usuarioId);
         try {
@@ -80,8 +80,8 @@ public class LancamentoResource {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity deletar(@RequestHeader("usuarioId") Long usuarioId,
-                                  @PathVariable("id") Long id){
+    public ResponseEntity deletar(@RequestHeader("usuarioId") UUID usuarioId,
+                                  @PathVariable("id") UUID id){
         log.debug("Iniciando deleção de lançamento id: {} para usuarioId: {}", id, usuarioId);
         try {
             return service.obterPorId(id).map(entity -> {
@@ -100,7 +100,7 @@ public class LancamentoResource {
     public ResponseEntity buscar(@RequestParam(value = "descricao", required = false) String descricao,
                                  @RequestParam(value = "mes", required = false) Integer mes,
                                  @RequestParam(value = "ano", required = false) Integer ano,
-                                 @RequestHeader("usuarioId") Long usuarioId){
+                                 @RequestHeader("usuarioId") UUID usuarioId){
 
         log.debug("Iniciando busca de lançamentos para usuarioId: {}", usuarioId);
 
@@ -122,8 +122,8 @@ public class LancamentoResource {
     }
 
     @PutMapping("{id}/status")
-    public ResponseEntity atualizarStatus( @RequestHeader("usuarioId") Long usuarioId,
-                                           @PathVariable("id") Long id,
+    public ResponseEntity atualizarStatus( @RequestHeader("usuarioId") UUID usuarioId,
+                                           @PathVariable("id") UUID id,
                                            @RequestBody LancamentoStatusDTO dto){
 
         log.debug("Iniciando alteração status de lançamento {} para usuarioId: {}", id, usuarioId);
@@ -148,7 +148,7 @@ public class LancamentoResource {
                 new ResponseEntity("Lançamento não encontrado na base de Dados.", HttpStatus.NOT_FOUND));
     }
 
-    private LancamentoDTO converter(Lancamento lancamento, Long usuarioId){
+    private LancamentoDTO converter(Lancamento lancamento, UUID usuarioId){
         validaUsuario(usuarioId, lancamento);
         return LancamentoDTO.builder()
                 .id(lancamento.getId())
@@ -161,7 +161,7 @@ public class LancamentoResource {
                 .build();
     }
 
-    private Lancamento converter(LancamentoDTO dto, Long usuarioId){
+    private Lancamento converter(LancamentoDTO dto, UUID usuarioId){
         Lancamento lancamento = new Lancamento();
         lancamento.setId(dto.getId());
         lancamento.setDescricao(dto.getDescricao());
@@ -183,7 +183,7 @@ public class LancamentoResource {
         return lancamento;
     }
 
-    private void validaUsuario(@RequestHeader("usuarioId") Long usuarioId, Lancamento entity) {
+    private void validaUsuario(@RequestHeader("usuarioId") UUID usuarioId, Lancamento entity) {
         if (!entity.getUsuario().getId().equals(usuarioId)) {
             throw new AutorizacaoException("Usuário sem permissão para acessar o recurso.");
         }

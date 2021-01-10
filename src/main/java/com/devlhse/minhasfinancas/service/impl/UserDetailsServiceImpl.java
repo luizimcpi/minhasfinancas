@@ -26,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         if (usuario.isPresent()){
             var userDetails = new CustomUserDetails(usuario.get(),
-                    true, true, true, true,
+                    usuario.get().isAtivo(), true, true, true,
                     new ArrayList<>());
              return userDetails;
         }else{

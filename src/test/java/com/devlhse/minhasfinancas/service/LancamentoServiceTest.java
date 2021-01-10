@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,7 +35,7 @@ public class LancamentoServiceTest {
 	@Test
 	public void deveSalvarUmLancamento(){
 		Lancamento lancamentoASalvar = criarLancamentoValido();
-		lancamentoASalvar.setId(1l);
+		lancamentoASalvar.setId(UUID.randomUUID());
 		service.salvar(lancamentoASalvar);
 		verify(repository, times(1)).save(lancamentoASalvar);
 	}
@@ -60,7 +61,7 @@ public class LancamentoServiceTest {
 	@Test
 	public void deveAtualizarUmLancamento(){
 		Lancamento lancamentoAAtualizar = criarLancamentoValido();
-		lancamentoAAtualizar.setId(1l);
+		lancamentoAAtualizar.setId(UUID.randomUUID());
 		service.atualizar(lancamentoAAtualizar);
 		verify(repository, times(1)).save(lancamentoAAtualizar);
 	}
@@ -77,7 +78,7 @@ public class LancamentoServiceTest {
 	@Test
 	public void deveDeletarUmLancamento(){
 		Lancamento lancamento = criarLancamentoValido();
-		lancamento.setId(1l);
+		lancamento.setId(UUID.randomUUID());
 		service.deletar(lancamento);
 		verify(repository, times(1)).delete(lancamento);
 	}
@@ -94,7 +95,7 @@ public class LancamentoServiceTest {
 	@Test
 	public void deveFiltrarLancamentos(){
 		Lancamento lancamento = criarLancamentoValido();
-		lancamento.setId(1l);
+		lancamento.setId(UUID.randomUUID());
 
 		List<Lancamento> lancamentos = Arrays.asList(lancamento);
 
@@ -108,7 +109,7 @@ public class LancamentoServiceTest {
 	@Test
 	public void deveAtualizarStatusLancamento(){
 		Lancamento lancamentoAAtualizar = criarLancamentoValido();
-		lancamentoAAtualizar.setId(1l);
+		lancamentoAAtualizar.setId(UUID.randomUUID());
 		service.atualizarStatus(lancamentoAAtualizar, StatusLancamento.PENDENTE);
 		verify(repository, times(1)).save(lancamentoAAtualizar);
 	}
@@ -124,12 +125,13 @@ public class LancamentoServiceTest {
 
 	@Test
 	public void deveObterLancamentoPorId(){
+		var lancamentoId = UUID.randomUUID();
 		Lancamento lancamento = criarLancamentoValido();
-		lancamento.setId(1l);
-		when(repository.findById(anyLong())).thenReturn(Optional.of(lancamento));
-		Optional<Lancamento> lancamentoEncontrado = service.obterPorId(1l);
+		lancamento.setId(lancamentoId);
+		when(repository.findById(any(UUID.class))).thenReturn(Optional.of(lancamento));
+		Optional<Lancamento> lancamentoEncontrado = service.obterPorId(lancamentoId);
 		assertTrue(lancamentoEncontrado.isPresent());
-		assertEquals(1l, lancamentoEncontrado.get().getId());
+		assertEquals(lancamentoId, lancamentoEncontrado.get().getId());
 		assertEquals("lançamento teste", lancamentoEncontrado.get().getDescricao());
 		assertEquals(2020, lancamentoEncontrado.get().getAno());
 		assertEquals(1, lancamentoEncontrado.get().getMes());
@@ -137,40 +139,45 @@ public class LancamentoServiceTest {
 
 	@Test
 	public void naoDeveObterLancamentoQuandoIdNaoExistir(){
-		when(repository.findById(anyLong())).thenReturn(Optional.empty());
-		Optional<Lancamento> lancamentoEncontrado = service.obterPorId(1l);
+		var lancamentoId = UUID.randomUUID();
+		when(repository.findById(any(UUID.class))).thenReturn(Optional.empty());
+		Optional<Lancamento> lancamentoEncontrado = service.obterPorId(lancamentoId);
 		assertTrue(lancamentoEncontrado.isEmpty());
 	}
 
 	@Test
 	public void deveObterSaldo(){
-		when(repository.obterSaldoPorUsuarioETipoEStatus(1l, TipoLancamento.RECEITA, StatusLancamento.EFETIVADO)).thenReturn(BigDecimal.valueOf(400.00));
-		when(repository.obterSaldoPorUsuarioETipoEStatus(1l, TipoLancamento.DESPESA, StatusLancamento.EFETIVADO)).thenReturn(BigDecimal.valueOf(100.00));
-		BigDecimal saldo = service.obterSaldoPorUsuario(1l);
+		var usuarioId = UUID.randomUUID();
+		when(repository.obterSaldoPorUsuarioETipoEStatus(usuarioId, TipoLancamento.RECEITA, StatusLancamento.EFETIVADO)).thenReturn(BigDecimal.valueOf(400.00));
+		when(repository.obterSaldoPorUsuarioETipoEStatus(usuarioId, TipoLancamento.DESPESA, StatusLancamento.EFETIVADO)).thenReturn(BigDecimal.valueOf(100.00));
+		BigDecimal saldo = service.obterSaldoPorUsuario(usuarioId);
 		assertEquals(BigDecimal.valueOf(300.00), saldo);
 	}
 
 	@Test
 	public void deveObterSaldoQuandoNaoExistirReceitas(){
-		when(repository.obterSaldoPorUsuarioETipoEStatus(1l, TipoLancamento.RECEITA, StatusLancamento.EFETIVADO)).thenReturn(null);
-		when(repository.obterSaldoPorUsuarioETipoEStatus(1l, TipoLancamento.DESPESA, StatusLancamento.EFETIVADO)).thenReturn(BigDecimal.valueOf(100.00));
-		BigDecimal saldo = service.obterSaldoPorUsuario(1l);
+		var usuarioId = UUID.randomUUID();
+		when(repository.obterSaldoPorUsuarioETipoEStatus(usuarioId, TipoLancamento.RECEITA, StatusLancamento.EFETIVADO)).thenReturn(null);
+		when(repository.obterSaldoPorUsuarioETipoEStatus(usuarioId, TipoLancamento.DESPESA, StatusLancamento.EFETIVADO)).thenReturn(BigDecimal.valueOf(100.00));
+		BigDecimal saldo = service.obterSaldoPorUsuario(usuarioId);
 		assertEquals(BigDecimal.valueOf(-100.00), saldo);
 	}
 
 	@Test
 	public void deveObterSaldoQuandoNaoExistirDespesas(){
-		when(repository.obterSaldoPorUsuarioETipoEStatus(1l, TipoLancamento.RECEITA, StatusLancamento.EFETIVADO)).thenReturn(BigDecimal.valueOf(400.00));
-		when(repository.obterSaldoPorUsuarioETipoEStatus(1l, TipoLancamento.DESPESA, StatusLancamento.EFETIVADO)).thenReturn(null);
-		BigDecimal saldo = service.obterSaldoPorUsuario(1l);
+		var usuarioId = UUID.randomUUID();
+		when(repository.obterSaldoPorUsuarioETipoEStatus(usuarioId, TipoLancamento.RECEITA, StatusLancamento.EFETIVADO)).thenReturn(BigDecimal.valueOf(400.00));
+		when(repository.obterSaldoPorUsuarioETipoEStatus(usuarioId, TipoLancamento.DESPESA, StatusLancamento.EFETIVADO)).thenReturn(null);
+		BigDecimal saldo = service.obterSaldoPorUsuario(usuarioId);
 		assertEquals(BigDecimal.valueOf(400.00), saldo);
 	}
 
 	@Test
 	public void deveObterSaldoQuandoNaoExistirReceitasEDespesas(){
-		when(repository.obterSaldoPorUsuarioETipoEStatus(1l, TipoLancamento.RECEITA, StatusLancamento.EFETIVADO)).thenReturn(null);
-		when(repository.obterSaldoPorUsuarioETipoEStatus(1l, TipoLancamento.DESPESA, StatusLancamento.EFETIVADO)).thenReturn(null);
-		BigDecimal saldo = service.obterSaldoPorUsuario(1l);
+		var usuarioId = UUID.randomUUID();
+		when(repository.obterSaldoPorUsuarioETipoEStatus(usuarioId, TipoLancamento.RECEITA, StatusLancamento.EFETIVADO)).thenReturn(null);
+		when(repository.obterSaldoPorUsuarioETipoEStatus(usuarioId, TipoLancamento.DESPESA, StatusLancamento.EFETIVADO)).thenReturn(null);
+		BigDecimal saldo = service.obterSaldoPorUsuario(usuarioId);
 		assertEquals(BigDecimal.valueOf(0), saldo);
 	}
 
@@ -221,7 +228,7 @@ public class LancamentoServiceTest {
 
 	private Usuario criarUsuarioValido () {
 		return Usuario.builder()
-				.id(1l)
+				.id(UUID.randomUUID())
 				.nome("teste")
 				.senha("teste")
 				.email("teste@email.com")
