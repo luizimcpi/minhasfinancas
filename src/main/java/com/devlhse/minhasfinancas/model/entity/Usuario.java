@@ -1,5 +1,6 @@
 package com.devlhse.minhasfinancas.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.*;
@@ -32,6 +33,10 @@ public class Usuario {
 
 	@Column( name = "senha")
 	private String senha;
+
+	@Column( name = "ativo")
+	@JsonIgnore
+	private boolean ativo;
 
 	@Column( name = "data_cadastro")
 	@CreationTimestamp

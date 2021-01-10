@@ -28,6 +28,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 				.nome(usuarioResource.getNome())
 				.email(usuarioResource.getEmail())
 				.senha(passwordEncoder.encode(usuarioResource.getSenha()))
+				.ativo(true)
 				.build();
 		validarEmail(usuario.getEmail());
 		return repository.save(usuario);

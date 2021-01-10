@@ -4,6 +4,7 @@ CREATE TABLE public.usuario
   nome character varying(150),
   email character varying(100),
   senha character varying(200),
+  ativo boolean NOT NULL,
   data_cadastro timestamp without time zone NOT NULL
 );
 
