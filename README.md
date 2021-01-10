@@ -37,6 +37,7 @@ ou
 ```
 - Criar exception handler e remover lógica da camada de resource
 - Criar logs e rastreabilidade com ELK
+- Implementar autorização para evitar que usuarios mesmo com token consigam acessar informações de lançamentos de outros usuarios
 ```
 
 

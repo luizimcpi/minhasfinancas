@@ -30,7 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     new ArrayList<>());
              return userDetails;
         }else{
-            throw new UsernameNotFoundException(String.format("Username[%s] not found"));
+            throw new UsernameNotFoundException(String.format("Username not found"));
         }
     }
 }

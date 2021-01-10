@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.devlhse</groupId>
 	<artifactId>minhasfinancas</artifactId>
-	<version>3.0.0</version>
+	<version>3.0.1</version>
 	<name>minhasfinancas</name>
 	<description>Projeto para Gerenciamento de finanças pessoais</description>
 
