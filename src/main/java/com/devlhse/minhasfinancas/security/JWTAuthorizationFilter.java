@@ -17,8 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.HEADER_STRING;
-import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.TOKEN_PREFIX;
+import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.*;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -49,9 +48,9 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     // Reads the JWT from the Authorization header, and then uses JWT to validate the token
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) throws IOException {
         String token = request.getHeader(HEADER_STRING);
-        String usuarioIdHeader = request.getHeader("usuarioId");
+        String usuarioIdHeader = request.getHeader(HEADER_USUARIO_ID);
 
-        if (token != null && usuarioIdHeader != null) {
+        if (token != null) {
             // parse the token.
             String loggedUser = JWT.require(Algorithm.HMAC512(jwtConfig.getJwtSecret().getBytes()))
                     .build()
@@ -59,7 +58,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                     .getSubject();
 
             if (loggedUser != null) {
-                if(!loggedUser.equals(usuarioIdHeader)){
+                if(usuarioIdHeader != null && !loggedUser.equals(usuarioIdHeader)){
                     throw new AutorizacaoException("Send valid user id in header.");
                 }
                 // new arraylist means authorities

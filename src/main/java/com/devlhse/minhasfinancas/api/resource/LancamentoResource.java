@@ -40,7 +40,8 @@ public class LancamentoResource {
     }
 
     @PostMapping
-    public ResponseEntity salvar(@RequestHeader("usuarioId") Long usuarioId, @RequestBody LancamentoDTO dto){
+    public ResponseEntity salvar(@RequestHeader("usuarioId") Long usuarioId,
+                                 @RequestBody LancamentoDTO dto){
         try {
             Lancamento lancamento = converter(dto, usuarioId);
             lancamento = service.salvar(lancamento);
@@ -51,28 +52,39 @@ public class LancamentoResource {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity atualizar(@RequestHeader("usuarioId") Long usuarioId, @PathVariable("id") Long id, @RequestBody LancamentoDTO dto) {
-        return service.obterPorId(id).map(entity -> {
-            try {
-                Lancamento lancamento = converter(dto, usuarioId);
-                lancamento.setId(entity.getId());
-                lancamento.setDataCadastro(entity.getDataCadastro());
-                service.atualizar(lancamento);
-                return ResponseEntity.ok(lancamento);
-            } catch (RegraNegocioException e){
-                return ResponseEntity.badRequest().body(e.getMessage());
-            }
-        }).orElseGet(() ->
-                new ResponseEntity("Lançamento não encontrado na base de dados.", HttpStatus.NOT_FOUND));
+    public ResponseEntity atualizar(@RequestHeader("usuarioId") Long usuarioId,
+                                    @PathVariable("id") Long id,
+                                    @RequestBody LancamentoDTO dto) {
+        try {
+            return service.obterPorId(id).map(entity -> {
+                    validaUsuario(usuarioId, entity);
+                    Lancamento lancamento = converter(dto, usuarioId);
+                    lancamento.setId(entity.getId());
+                    lancamento.setDataCadastro(entity.getDataCadastro());
+                    lancamento = service.atualizar(lancamento);
+                    return ResponseEntity.ok(lancamento);
+            }).orElseGet(() ->
+                    new ResponseEntity("Lançamento não encontrado na base de dados.", HttpStatus.NOT_FOUND));
+        } catch (RegraNegocioException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (AutorizacaoException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity deletar(@RequestHeader("usuarioId") Long usuarioId, @PathVariable("id") Long id){
-        return service.obterPorId(id).map(entity -> {
-            service.deletar(entity);
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
-        }).orElseGet(() ->
-                new ResponseEntity("Lançamento não encontrado na base de dados.", HttpStatus.NOT_FOUND));
+    public ResponseEntity deletar(@RequestHeader("usuarioId") Long usuarioId,
+                                  @PathVariable("id") Long id){
+        try {
+            return service.obterPorId(id).map(entity -> {
+                validaUsuario(usuarioId, entity);
+                service.deletar(entity);
+                return new ResponseEntity(HttpStatus.NO_CONTENT);
+            }).orElseGet(() ->
+                    new ResponseEntity("Lançamento não encontrado na base de dados.", HttpStatus.NOT_FOUND));
+        }catch (AutorizacaoException e){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping
@@ -99,27 +111,30 @@ public class LancamentoResource {
     }
 
     @PutMapping("{id}/status")
-    public ResponseEntity atualizarStatus( @RequestHeader("usuarioId") Long usuarioId, @PathVariable("id") Long id, @RequestBody LancamentoStatusDTO dto){
+    public ResponseEntity atualizarStatus( @RequestHeader("usuarioId") Long usuarioId,
+                                           @PathVariable("id") Long id,
+                                           @RequestBody LancamentoStatusDTO dto){
         return service.obterPorId(id).map(entity -> {
             StatusLancamento statusSelecionado = StatusLancamento.valueOf(dto.getStatus());
             if(statusSelecionado == null){
                 return ResponseEntity.badRequest().body("Não foi possível atualizar status do lançamento.");
             }
             try {
+                validaUsuario(usuarioId, entity);
                 entity.setStatus(statusSelecionado);
                 service.atualizar(entity);
                 return ResponseEntity.ok(entity);
             }catch (RegraNegocioException e){
                 return ResponseEntity.badRequest().body(e.getMessage());
+            }catch(AutorizacaoException e){
+                return ResponseEntity.notFound().build();
             }
         }).orElseGet(() ->
                 new ResponseEntity("Lançamento não encontrado na base de Dados.", HttpStatus.NOT_FOUND));
     }
 
     private LancamentoDTO converter(Lancamento lancamento, Long usuarioId){
-        if(!lancamento.getUsuario().getId().equals(usuarioId)){
-            throw new AutorizacaoException("Usuário sem permissão para acessar o recurso.");
-        }
+        validaUsuario(usuarioId, lancamento);
         return LancamentoDTO.builder()
                 .id(lancamento.getId())
                 .descricao(lancamento.getDescricao())
@@ -151,5 +166,11 @@ public class LancamentoResource {
         }
 
         return lancamento;
+    }
+
+    private void validaUsuario(@RequestHeader("usuarioId") Long usuarioId, Lancamento entity) {
+        if (!entity.getUsuario().getId().equals(usuarioId)) {
+            throw new AutorizacaoException("Usuário sem permissão para acessar o recurso.");
+        }
     }
 }

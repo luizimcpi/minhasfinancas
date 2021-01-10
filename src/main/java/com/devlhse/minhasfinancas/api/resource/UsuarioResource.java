@@ -37,15 +37,15 @@ public class UsuarioResource {
        }
     }
 
-    @GetMapping("{id}/saldo")
-    public ResponseEntity obterSaldo(@PathVariable("id") Long id){
-        Optional<Usuario> usuario = service.obterPorId(id);
+    @GetMapping("saldo")
+    public ResponseEntity obterSaldo(@RequestHeader("usuarioId") Long usuarioId){
+        Optional<Usuario> usuario = service.obterPorId(usuarioId);
 
         if(usuario.isEmpty()){
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
-        BigDecimal saldo = lancamentoService.obterSaldoPorUsuario(id);
+        BigDecimal saldo = lancamentoService.obterSaldoPorUsuario(usuarioId);
         return ResponseEntity.ok(saldo);
     }
 }
