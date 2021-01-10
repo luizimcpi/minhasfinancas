@@ -11,6 +11,7 @@ import com.devlhse.minhasfinancas.model.enums.TipoLancamento;
 import com.devlhse.minhasfinancas.service.LancamentoService;
 import com.devlhse.minhasfinancas.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/lancamentos")
 @RequiredArgsConstructor
+@Slf4j
 public class LancamentoResource {
 
     private final LancamentoService service;
@@ -29,24 +31,27 @@ public class LancamentoResource {
     @GetMapping("{id}")
     public ResponseEntity obterLancamento(@PathVariable("id") Long id,
                                           @RequestHeader("usuarioId") Long usuarioId){
+        log.debug("Iniciando busca de lançamento com id: {} e usuarioId: {}", id, usuarioId);
         try {
             return service.obterPorId(id)
                     .map(lancamento -> new ResponseEntity(converter(lancamento, usuarioId), HttpStatus.OK))
                     .orElseGet(() -> new ResponseEntity(HttpStatus.NOT_FOUND));
         } catch (AutorizacaoException e){
+            log.debug("Erro na autorização de busca de lançamento com id: {} e usuarioId: {}", id, usuarioId);
             return ResponseEntity.notFound().build();
         }
-
     }
 
     @PostMapping
     public ResponseEntity salvar(@RequestHeader("usuarioId") Long usuarioId,
                                  @RequestBody LancamentoDTO dto){
+        log.debug("Iniciando cadastro de lançamento para usuarioId: {}", usuarioId);
         try {
             Lancamento lancamento = converter(dto, usuarioId);
             lancamento = service.salvar(lancamento);
             return new ResponseEntity(lancamento, HttpStatus.CREATED);
         } catch (RegraNegocioException e){
+            log.debug("Erro no cadastro de lançamento para usuarioId: {}", usuarioId);
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -55,6 +60,7 @@ public class LancamentoResource {
     public ResponseEntity atualizar(@RequestHeader("usuarioId") Long usuarioId,
                                     @PathVariable("id") Long id,
                                     @RequestBody LancamentoDTO dto) {
+        log.debug("Iniciando alteração de lançamento id: {} para usuarioId: {}", id, usuarioId);
         try {
             return service.obterPorId(id).map(entity -> {
                     validaUsuario(usuarioId, entity);
@@ -68,6 +74,7 @@ public class LancamentoResource {
         } catch (RegraNegocioException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (AutorizacaoException e) {
+            log.debug("Erro na autorização de busca de lançamento com id: {} e usuarioId: {}", id, usuarioId);
             return ResponseEntity.notFound().build();
         }
     }
@@ -75,6 +82,7 @@ public class LancamentoResource {
     @DeleteMapping("{id}")
     public ResponseEntity deletar(@RequestHeader("usuarioId") Long usuarioId,
                                   @PathVariable("id") Long id){
+        log.debug("Iniciando deleção de lançamento id: {} para usuarioId: {}", id, usuarioId);
         try {
             return service.obterPorId(id).map(entity -> {
                 validaUsuario(usuarioId, entity);
@@ -83,6 +91,7 @@ public class LancamentoResource {
             }).orElseGet(() ->
                     new ResponseEntity("Lançamento não encontrado na base de dados.", HttpStatus.NOT_FOUND));
         }catch (AutorizacaoException e){
+            log.debug("Erro na autorização de busca de lançamento com id: {} e usuarioId: {}", id, usuarioId);
             return ResponseEntity.notFound().build();
         }
     }
@@ -92,6 +101,8 @@ public class LancamentoResource {
                                  @RequestParam(value = "mes", required = false) Integer mes,
                                  @RequestParam(value = "ano", required = false) Integer ano,
                                  @RequestHeader("usuarioId") Long usuarioId){
+
+        log.debug("Iniciando busca de lançamentos para usuarioId: {}", usuarioId);
 
         Lancamento lancamentoFiltro = new Lancamento();
         lancamentoFiltro.setDescricao(descricao);
@@ -114,6 +125,9 @@ public class LancamentoResource {
     public ResponseEntity atualizarStatus( @RequestHeader("usuarioId") Long usuarioId,
                                            @PathVariable("id") Long id,
                                            @RequestBody LancamentoStatusDTO dto){
+
+        log.debug("Iniciando alteração status de lançamento {} para usuarioId: {}", id, usuarioId);
+
         return service.obterPorId(id).map(entity -> {
             StatusLancamento statusSelecionado = StatusLancamento.valueOf(dto.getStatus());
             if(statusSelecionado == null){
@@ -127,6 +141,7 @@ public class LancamentoResource {
             }catch (RegraNegocioException e){
                 return ResponseEntity.badRequest().body(e.getMessage());
             }catch(AutorizacaoException e){
+                log.debug("Erro na autorização de busca de lançamento com id: {} e usuarioId: {}", id, usuarioId);
                 return ResponseEntity.notFound().build();
             }
         }).orElseGet(() ->
