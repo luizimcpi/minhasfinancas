@@ -1,6 +1,7 @@
 package com.devlhse.minhasfinancas.api.resource;
 
 import com.devlhse.minhasfinancas.api.dto.UsuarioDTO;
+import com.devlhse.minhasfinancas.config.JwtConfig;
 import com.devlhse.minhasfinancas.exception.RegraNegocioException;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.service.LancamentoService;
@@ -46,6 +47,9 @@ public class UsuarioResourceTest {
 
     @MockBean
     LancamentoService lancamentoService;
+
+    @MockBean
+    JwtConfig jwtConfig;
 
 
     @Test
