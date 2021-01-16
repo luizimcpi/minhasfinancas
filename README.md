@@ -21,6 +21,17 @@ Projeto para controle de finanças pessoais utilizando as seguintes tecnologias:
 ou 
 
 2 - Executar o comando no diretorio raiz -> ./mvnw spring-boot:run
+
+ou 
+
+3 - via docker 
+
+./mvnw clean package
+
+docker build -t minhasfinancas .
+
+**docker-compose rm (case exists old builds, you need remove)
+docker-compose up
 ```
 
 ## Como executar os testes
@@ -43,10 +54,4 @@ ou
 
 ```
 https://semver.org/
-```
-
-
-#### Link do curso
-```
-https://www.udemy.com/course/desenvolva-aplicacoes-completas-com-spring-boot-e-react-js/
 ```

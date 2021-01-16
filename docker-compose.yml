@@ -1,0 +1,17 @@
+version: '3.4'
+services:
+  app:
+    image: minhasfinancas
+    container_name: minhas-financas-api
+    ports:
+      - 8080:8080
+    depends_on:
+      - databasepg
+  databasepg:
+    container_name: databasepg
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5433:5432"
