@@ -10,14 +10,24 @@ import com.devlhse.minhasfinancas.model.enums.StatusLancamento;
 import com.devlhse.minhasfinancas.model.enums.TipoLancamento;
 import com.devlhse.minhasfinancas.service.LancamentoService;
 import com.devlhse.minhasfinancas.service.UsuarioService;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/lancamentos")
@@ -100,6 +110,7 @@ public class LancamentoResource {
     public ResponseEntity buscar(@RequestParam(value = "descricao", required = false) String descricao,
                                  @RequestParam(value = "mes", required = false) Integer mes,
                                  @RequestParam(value = "ano", required = false) Integer ano,
+                                 @RequestParam(value = "tipo", required = false) String tipo,
                                  @RequestHeader("usuarioId") UUID usuarioId){
 
         log.debug("Iniciando busca de lançamentos para usuarioId: {}", usuarioId);
@@ -108,6 +119,7 @@ public class LancamentoResource {
         lancamentoFiltro.setDescricao(descricao);
         lancamentoFiltro.setMes(mes);
         lancamentoFiltro.setAno(ano);
+        lancamentoFiltro.setTipo(TipoLancamento.valueOf(tipo));
 
         Optional<Usuario> usuario = usuarioService.obterPorId(usuarioId);
         if(usuario.isEmpty()){
