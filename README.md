@@ -1,5 +1,5 @@
 # Minhas Finanças
-
+[![Build Status](https://travis-ci.org/luizimcpi/minhasfinancas.svg?branch=master)](https://travis-ci.org/luizimcpi/minhasfinancas)
 ```
 Projeto para controle de finanças pessoais utilizando as seguintes tecnologias:
 ```
