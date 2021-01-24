@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.devlhse</groupId>
 	<artifactId>minhasfinancas</artifactId>
-	<version>3.2.2</version>
+	<version>3.3.0</version>
 	<name>minhasfinancas</name>
 	<description>Projeto para Gerenciamento de finanças pessoais</description>
 
@@ -79,9 +79,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>1.15.1</version>
+			<groupId>com.opentable.components</groupId>
+			<artifactId>otj-pg-embedded</artifactId>
+			<version>0.13.1</version>
 			<scope>test</scope>
 		</dependency>
 

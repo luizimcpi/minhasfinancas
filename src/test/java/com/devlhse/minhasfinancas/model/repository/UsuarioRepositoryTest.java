@@ -1,26 +1,29 @@
 package com.devlhse.minhasfinancas.model.repository;
 
-import com.devlhse.minhasfinancas.AbstractIntegrationTest;
+import com.devlhse.minhasfinancas.ComponentTestExtension;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
-import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
 
-@ExtendWith(SpringExtension.class)
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+@ExtendWith({SpringExtension.class, ComponentTestExtension.class})
 @ActiveProfiles("test")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UsuarioRepositoryTest extends AbstractIntegrationTest {
+public class UsuarioRepositoryTest {
 
 	@Autowired
 	UsuarioRepository repository;
@@ -28,7 +31,9 @@ public class UsuarioRepositoryTest extends AbstractIntegrationTest {
 	@Autowired
 	TestEntityManager entityManager;
 
+
 	@Test
+	@Rollback
 	public void deveVerificarAExistenciaDeUmEmail(){
 		Usuario usuario = criarUsuario();
 
@@ -40,6 +45,7 @@ public class UsuarioRepositoryTest extends AbstractIntegrationTest {
 	}
 
 	@Test
+	@Rollback
 	public void deveRetornarFalsoQuandoNaoHouverUsuarioComEmail(){
 
 		boolean result = repository.existsByEmail("usuario@gmail.com");
@@ -48,6 +54,7 @@ public class UsuarioRepositoryTest extends AbstractIntegrationTest {
 	}
 
 	@Test
+	@Rollback
 	public void devePersistirUmUsuarioNaBaseDeDados(){
 		Usuario usuario = criarUsuario();
 
@@ -57,6 +64,7 @@ public class UsuarioRepositoryTest extends AbstractIntegrationTest {
 	}
 
 	@Test
+	@Rollback
 	public void deveBuscarUmUsuarioPorEmail(){
 		Usuario usuario = criarUsuario();
 		entityManager.persist(usuario);
@@ -68,6 +76,7 @@ public class UsuarioRepositoryTest extends AbstractIntegrationTest {
 	}
 
 	@Test
+	@Rollback
 	public void deveRetornarVazioAoBuscarUmUsuarioPorEmailQuandoNaoExisteNaBase(){
 
 		Optional<Usuario> usuarioRetornado = repository.findByEmail("usuario@email.com");
