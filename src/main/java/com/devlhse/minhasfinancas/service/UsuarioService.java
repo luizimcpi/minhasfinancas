@@ -1,7 +1,7 @@
 package com.devlhse.minhasfinancas.service;
 
 import com.devlhse.minhasfinancas.model.entity.Usuario;
-import java.util.Optional;
+
 import java.util.UUID;
 
 public interface UsuarioService {
@@ -10,5 +10,5 @@ public interface UsuarioService {
 
 	void validarEmail(String email);
 
-	Optional<Usuario> obterPorId(UUID id);
+	Usuario obterPorId(UUID id);
 }

@@ -46,7 +46,6 @@ docker-compose up
 
 ## TODO
 ```
-- Criar exception handler e remover lógica da camada de resource
 - Criar logs e rastreabilidade com ELK
 ```
 

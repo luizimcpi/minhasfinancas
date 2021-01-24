@@ -1,5 +1,6 @@
 package com.devlhse.minhasfinancas.service;
 
+import com.devlhse.minhasfinancas.exception.NotFoundException;
 import com.devlhse.minhasfinancas.exception.RegraNegocioException;
 import com.devlhse.minhasfinancas.model.entity.Lancamento;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
@@ -7,21 +8,23 @@ import com.devlhse.minhasfinancas.model.enums.StatusLancamento;
 import com.devlhse.minhasfinancas.model.enums.TipoLancamento;
 import com.devlhse.minhasfinancas.model.repository.LancamentoRepository;
 import com.devlhse.minhasfinancas.service.impl.LancamentoServiceImpl;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Example;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.junit.jupiter.api.Assertions;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Example;
 
 @ExtendWith(MockitoExtension.class)
 public class LancamentoServiceTest {
@@ -129,20 +132,21 @@ public class LancamentoServiceTest {
 		Lancamento lancamento = criarLancamentoValido();
 		lancamento.setId(lancamentoId);
 		when(repository.findById(any(UUID.class))).thenReturn(Optional.of(lancamento));
-		Optional<Lancamento> lancamentoEncontrado = service.obterPorId(lancamentoId);
-		assertTrue(lancamentoEncontrado.isPresent());
-		assertEquals(lancamentoId, lancamentoEncontrado.get().getId());
-		assertEquals("lançamento teste", lancamentoEncontrado.get().getDescricao());
-		assertEquals(2020, lancamentoEncontrado.get().getAno());
-		assertEquals(1, lancamentoEncontrado.get().getMes());
+		Lancamento lancamentoEncontrado = service.obterPorId(lancamentoId);
+		assertNotNull(lancamentoEncontrado);
+		assertEquals(lancamentoId, lancamentoEncontrado.getId());
+		assertEquals("lançamento teste", lancamentoEncontrado.getDescricao());
+		assertEquals(2020, lancamentoEncontrado.getAno());
+		assertEquals(1, lancamentoEncontrado.getMes());
 	}
 
 	@Test
 	public void naoDeveObterLancamentoQuandoIdNaoExistir(){
 		var lancamentoId = UUID.randomUUID();
 		when(repository.findById(any(UUID.class))).thenReturn(Optional.empty());
-		Optional<Lancamento> lancamentoEncontrado = service.obterPorId(lancamentoId);
-		assertTrue(lancamentoEncontrado.isEmpty());
+		Assertions.assertThrows(NotFoundException.class, () -> {
+			service.obterPorId(lancamentoId);
+		});
 	}
 
 	@Test
