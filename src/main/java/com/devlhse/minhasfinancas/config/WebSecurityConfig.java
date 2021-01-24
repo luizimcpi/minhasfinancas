@@ -63,7 +63,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         corsConfiguration.addAllowedMethod(HttpMethod.PUT);
         corsConfiguration.addAllowedMethod(HttpMethod.PATCH);
         corsConfiguration.addAllowedMethod(HttpMethod.DELETE);
+        corsConfiguration.addAllowedOrigin("http://financas-lh-pwa.herokuapp.com");
         source.registerCorsConfiguration("/**", corsConfiguration);
+
 
         return source;
     }
