@@ -5,5 +5,4 @@ jdk:
   - openjdk11
 
 script:
-  - ./gradlew test
   - ./mvnw test
