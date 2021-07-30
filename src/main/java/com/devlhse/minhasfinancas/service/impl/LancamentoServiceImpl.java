@@ -7,22 +7,30 @@ import com.devlhse.minhasfinancas.model.enums.StatusLancamento;
 import com.devlhse.minhasfinancas.model.enums.TipoLancamento;
 import com.devlhse.minhasfinancas.model.repository.LancamentoRepository;
 import com.devlhse.minhasfinancas.service.LancamentoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class LancamentoServiceImpl implements LancamentoService {
+
+
+    private Clock clock;
 
     private LancamentoRepository repository;
 
-    public LancamentoServiceImpl(LancamentoRepository repository){
+    public LancamentoServiceImpl(Clock clock, LancamentoRepository repository){
+        this.clock = clock;
         this.repository = repository;
     }
 
@@ -115,6 +123,34 @@ public class LancamentoServiceImpl implements LancamentoService {
         if(despesas == null) despesas = BigDecimal.ZERO;
 
         return receitas.subtract(despesas);
+    }
+
+    @Override
+    @Transactional
+    public void duplicarLancamentosMes(UUID usuarioId, Integer mesAtual) {
+        try {
+            var anoAtual = LocalDateTime.now(clock).getYear();
+            var novaDataControle = LocalDateTime.now(clock);
+            repository.buscarPorUsuarioEMesEAno(usuarioId, mesAtual, anoAtual).forEach(lancamento -> {
+                var lancamentoCopiado = Lancamento.builder()
+                        .ano(mesAtual == 12 ? lancamento.getAno()+1 : anoAtual)
+                        .id(UUID.randomUUID())
+                        .mes(mesAtual == 12 ? 1 : mesAtual + 1)
+                        .dataAlteracao(novaDataControle)
+                        .dataCadastro(novaDataControle)
+                        .descricao(lancamento.getDescricao())
+                        .status(StatusLancamento.PENDENTE)
+                        .tipo(lancamento.getTipo())
+                        .usuario(lancamento.getUsuario())
+                        .valor(lancamento.getValor())
+                        .build();
+
+                repository.save(lancamentoCopiado);
+            });
+        } catch (Exception e){
+            log.warn("Erro ao duplicar as faturas do mes: {} para usuarioId: {}. Error Message: {}", mesAtual, usuarioId, e.getMessage());
+            throw new RegraNegocioException("Ocorreu um erro ao duplicar as suas faturas.");
+        }
     }
 
 }

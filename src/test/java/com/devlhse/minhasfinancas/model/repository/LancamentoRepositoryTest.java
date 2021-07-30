@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class LancamentoRepositoryTest {
 
+    public static final UUID USUARIO_ID = UUID.fromString("999ebe8b-2a10-4405-92d8-d4decd9277da");
     @Autowired
     LancamentoRepository repository;
 
@@ -40,7 +42,7 @@ public class LancamentoRepositoryTest {
     @Test
     @Rollback
     public void deveSalvarLancamento(){
-        Lancamento lancamento = criarLancamento();
+        Lancamento lancamento = criarLancamento(2020);
 
         lancamento = repository.save(lancamento);
 
@@ -50,7 +52,7 @@ public class LancamentoRepositoryTest {
     @Test
     @Rollback
     public void deveDeletarUmLancamento(){
-        Lancamento lancamento = criarLancamento();
+        Lancamento lancamento = criarLancamento(2020);
         entityManager.persist(lancamento);
         lancamento = entityManager.find(Lancamento.class, lancamento.getId());
 
@@ -64,7 +66,7 @@ public class LancamentoRepositoryTest {
     @Test
     @Rollback
     public void deveAtualizarLancamento(){
-        Lancamento lancamento = criarLancamento();
+        Lancamento lancamento = criarLancamento(2020);
         entityManager.persist(lancamento);
 
         lancamento.setStatus(StatusLancamento.EFETIVADO);
@@ -86,7 +88,7 @@ public class LancamentoRepositoryTest {
 
         var usuarioSalvo = usuarioRepository.save(usuario);
 
-        Lancamento lancamento = criarLancamento();
+        Lancamento lancamento = criarLancamento(2020);
         lancamento.setUsuario(usuarioSalvo);
         entityManager.persist(lancamento);
 
@@ -95,10 +97,32 @@ public class LancamentoRepositoryTest {
         assertTrue(lancamentoEncontrado.isPresent());
     }
 
-    private Lancamento criarLancamento(){
+    @Test
+    @Rollback
+    public void deveBuscarLancamentosPorUsuarioEMes(){
+        Usuario usuario = criarUsuario();
+
+        var usuarioSalvo = usuarioRepository.save(usuario);
+
+        Lancamento lancamento2020 = criarLancamento(2020);
+        lancamento2020.setUsuario(usuarioSalvo);
+        entityManager.persist(lancamento2020);
+
+        Lancamento lancamento2021 = criarLancamento(2021);
+        lancamento2021.setUsuario(usuarioSalvo);
+        entityManager.persist(lancamento2021);
+
+        List<Lancamento> lancamentos = repository.buscarPorUsuarioEMesEAno(lancamento2020.getUsuario().getId(), 1, 2020);
+
+        assertTrue(lancamentos.size() == 1);
+        assertEquals(1, lancamentos.get(0).getMes());
+        assertEquals(2020, lancamentos.get(0).getAno());
+    }
+
+    private Lancamento criarLancamento(Integer ano){
 
         return Lancamento.builder()
-                .ano(2020)
+                .ano(ano)
                 .mes(1)
                 .descricao("lançamento teste")
                 .valor(BigDecimal.TEN)
@@ -109,7 +133,7 @@ public class LancamentoRepositoryTest {
 
     private Usuario criarUsuario(){
         return Usuario.builder()
-                .id(UUID.randomUUID())
+                .id(USUARIO_ID)
                 .nome("teste")
                 .email("teste@email.com")
                 .senha("12345678")

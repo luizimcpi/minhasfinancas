@@ -118,4 +118,13 @@ public class LancamentoResource {
         return ResponseEntity.ok(entity);
     }
 
+    @PostMapping("{mesAtual}")
+    public ResponseEntity duplicarLancamentos(@RequestHeader("usuarioId") UUID usuarioId,
+                                  @PathVariable("mesAtual") Integer mesAtual){
+        log.debug("Iniciando duplição de lançamento do mes: {} para usuarioId: {}", mesAtual, usuarioId);
+
+        service.duplicarLancamentosMes(usuarioId, mesAtual);
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
+
 }

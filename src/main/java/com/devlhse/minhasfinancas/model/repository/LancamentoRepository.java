@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,5 +27,14 @@ public interface LancamentoRepository extends JpaRepository<Lancamento, Long> {
             @Param("status") StatusLancamento status);
 
     Optional<Lancamento> findById(UUID id);
+
+    @Query(value =
+            "select l from Lancamento l join l.usuario u" +
+                    " WHERE u.id = :idUsuario and l.mes = :mes and l.ano = :ano")
+     List<Lancamento> buscarPorUsuarioEMesEAno(
+            @Param("idUsuario") UUID idUsuario,
+            @Param("mes") Integer mes,
+            @Param("ano") Integer ano
+    );
 
 }
