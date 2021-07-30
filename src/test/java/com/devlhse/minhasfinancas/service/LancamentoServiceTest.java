@@ -17,6 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Example;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +37,11 @@ public class LancamentoServiceTest {
 
 	@Mock
 	LancamentoRepository repository;
+
+	@Mock
+	private Clock clock;
+
+	private Clock fixedClock;
 
 	@Test
 	public void deveSalvarUmLancamento(){
@@ -183,6 +191,21 @@ public class LancamentoServiceTest {
 		when(repository.obterSaldoPorUsuarioETipoEStatus(usuarioId, TipoLancamento.DESPESA, StatusLancamento.EFETIVADO)).thenReturn(null);
 		BigDecimal saldo = service.obterSaldoPorUsuario(usuarioId);
 		assertEquals(BigDecimal.valueOf(0), saldo);
+	}
+
+	@Test
+	public void deveDuplicarLancamentosPorUsuarioMesEAnoComSucesso(){
+
+		fixedClock = Clock.fixed(Instant.parse("2020-01-01T10:15:30.00Z"), ZoneId.of("UTC"));
+		doReturn(fixedClock.instant()).when(clock).instant();
+		doReturn(fixedClock.getZone()).when(clock).getZone();
+
+		var lancamentoId = UUID.randomUUID();
+		Lancamento lancamento = criarLancamentoValido();
+		lancamento.setId(lancamentoId);
+		when(repository.buscarPorUsuarioEMesEAno(lancamento.getUsuario().getId(), lancamento.getMes(), lancamento.getAno()))
+				.thenReturn(List.of(lancamento));
+		service.duplicarLancamentosMes(lancamento.getUsuario().getId(), lancamento.getMes());
 	}
 
 

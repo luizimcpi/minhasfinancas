@@ -24,4 +24,6 @@ public interface LancamentoService {
     Lancamento obterPorId(UUID id);
 
     BigDecimal obterSaldoPorUsuario(UUID id);
+
+    void duplicarLancamentosMes(UUID usuarioId, Integer mesAtual);
 }
