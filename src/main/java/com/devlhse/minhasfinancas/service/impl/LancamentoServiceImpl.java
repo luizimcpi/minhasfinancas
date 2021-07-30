@@ -130,19 +130,22 @@ public class LancamentoServiceImpl implements LancamentoService {
     public void duplicarLancamentosMes(UUID usuarioId, Integer mesAtual) {
         try {
             var anoAtual = LocalDateTime.now(clock).getYear();
+            var novaDataControle = LocalDateTime.now(clock);
             repository.buscarPorUsuarioEMesEAno(usuarioId, mesAtual, anoAtual).forEach(lancamento -> {
-                if (mesAtual == 12) {
-                    lancamento.setMes(1);
-                    lancamento.setAno(lancamento.getAno()+1);
-                } else {
-                    lancamento.setMes(mesAtual + 1);
-                }
-                var novaDataControle = LocalDateTime.now();
-                lancamento.setStatus(StatusLancamento.PENDENTE);
-                lancamento.setDataCadastro(novaDataControle);
-                lancamento.setDataAlteracao(novaDataControle);
-                lancamento.setId(UUID.randomUUID());
-                repository.save(lancamento);
+                var lancamentoCopiado = Lancamento.builder()
+                        .ano(mesAtual == 12 ? lancamento.getAno()+1 : anoAtual)
+                        .id(UUID.randomUUID())
+                        .mes(mesAtual == 12 ? 1 : mesAtual + 1)
+                        .dataAlteracao(novaDataControle)
+                        .dataCadastro(novaDataControle)
+                        .descricao(lancamento.getDescricao())
+                        .status(StatusLancamento.PENDENTE)
+                        .tipo(lancamento.getTipo())
+                        .usuario(lancamento.getUsuario())
+                        .valor(lancamento.getValor())
+                        .build();
+
+                repository.save(lancamentoCopiado);
             });
         } catch (Exception e){
             log.warn("Erro ao duplicar as faturas do mes: {} para usuarioId: {}. Error Message: {}", mesAtual, usuarioId, e.getMessage());
