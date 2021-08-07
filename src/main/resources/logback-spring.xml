@@ -1,0 +1,33 @@
+<configuration>
+
+    <appender name="jsonConsoleAppender"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+
+            <fieldNames>
+                <levelValue>[ignore]</levelValue>
+                <version>[ignore]</version>
+            </fieldNames>
+
+            <providers>
+                <stackTrace>
+                    <throwableConverter
+                            class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                        <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                        <maxLength>2048</maxLength>
+                        <shortenedClassNameLength>20</shortenedClassNameLength>
+                        <exclude>^sun\.reflect\..*\.invoke</exclude>
+                        <exclude>^net\.sf\.cglib\.proxy\.MethodProxy\.invoke</exclude>
+                        <rootCauseFirst>true</rootCauseFirst>
+                    </throwableConverter>
+                </stackTrace>
+            </providers>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="jsonConsoleAppender" />
+    </root>
+
+
+</configuration>

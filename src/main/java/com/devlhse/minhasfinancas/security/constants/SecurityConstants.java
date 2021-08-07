@@ -9,5 +9,6 @@ public class SecurityConstants {
     public static final String HEADER_USUARIO_ID = "usuarioId";
     public static final String SIGN_UP_URL_WITH_ROOT = "/api/usuarios/";
     public static final String SIGN_UP_URL = "/api/usuarios";
+    public static final String MAIN_URL = "/";
 }
 
