@@ -38,6 +38,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.exceptionHandling().authenticationEntryPoint(new AuthFailureHandler());
+
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(MAIN_URL, SIGN_UP_URL, SIGN_UP_URL_WITH_ROOT).permitAll()
                 .anyRequest().authenticated()
