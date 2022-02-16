@@ -29,7 +29,7 @@ public class Usuario {
 	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
 	@Column( name = "id")
 	private UUID id;
-	
+
 	@Column( name = "nome")
 	private String nome;
 
