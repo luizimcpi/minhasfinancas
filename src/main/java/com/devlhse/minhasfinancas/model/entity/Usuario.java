@@ -29,12 +29,10 @@ public class Usuario {
 	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
 	@Column( name = "id")
 	private UUID id;
-
-	@JsonIgnore
+	
 	@Column( name = "nome")
 	private String nome;
 
-	@JsonIgnore
 	@Column( name = "email")
 	private String email;
 
