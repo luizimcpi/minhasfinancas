@@ -3,6 +3,7 @@ package com.devlhse.minhasfinancas.service.impl;
 import com.devlhse.minhasfinancas.model.entity.CustomUserDetails;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.model.repository.UsuarioRepository;
+import com.devlhse.minhasfinancas.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,9 +19,11 @@ import java.util.Optional;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private UsuarioRepository repository;
+    private EmailService emailService;
 
-    public UserDetailsServiceImpl(UsuarioRepository repository) {
+    public UserDetailsServiceImpl(UsuarioRepository repository, EmailService emailService) {
         this.repository = repository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -29,6 +32,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         if (usuario.isPresent()){
             if(!usuario.get().isAtivo()) {
+                emailService.enviarEmail(usuario.get().getEmail(),
+                        "Ativação de usuário - Minhas Finanças",
+                        "<b>Clique no link de ativação na página de login e utilize o seguinte código: 123456 para ativar seu usuário na página de login.</b>");
                 log.warn("Usuario id: {} está inativo publicando evento de envio email.", usuario.get().getId());
                 throw new InsufficientAuthenticationException("Usuario Inativo, favor ativar no link enviado para o email");
             }

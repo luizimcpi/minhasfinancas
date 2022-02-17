@@ -51,11 +51,11 @@ public class GmailEmailServiceImpl implements EmailService {
         try {
 
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("seuemail@gmail.com"));
+            message.setFrom(new InternetAddress(emailConfig.getUserEmail()));
             //Remetente
 
             Address[] toUser = InternetAddress
-                    .parse("seuamigo@gmail.com, seucolega@hotmail.com, seuparente@yahoo.com.br");
+                    .parse(destinatario);
 
             message.setRecipients(Message.RecipientType.TO, toUser);
             message.setSubject(titulo);//Assunto
