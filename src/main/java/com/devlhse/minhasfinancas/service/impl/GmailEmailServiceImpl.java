@@ -48,7 +48,8 @@ public class GmailEmailServiceImpl implements EmailService {
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(destinatario));
             message.setSubject(titulo);
-            message.setText(mensagem);
+//            message.setText(mensagem);
+            message.setContent(mensagem, "text/html");
 
             Transport.send(message);
 

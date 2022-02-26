@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static com.devlhse.minhasfinancas.utils.RandomUtils.getSixDigitsRandomNumberString;
+
 @Service
 @Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -32,9 +34,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         if (usuario.isPresent()){
             if(!usuario.get().isAtivo()) {
+                final var randomNumber = getSixDigitsRandomNumberString();
                 emailService.enviarEmail(usuario.get().getEmail(),
                         "Ativação de usuário - Minhas Finanças",
-                        "<b>Clique no link de ativação na página de login e utilize o seguinte código: 123456 para ativar seu usuário na página de login.</b>");
+                        "Informe o seguinte código de segurança na página de login para ativar seu usuário: <b>" + randomNumber + "</b>");
                 log.warn("Usuario id: {} está inativo publicando evento de envio email.", usuario.get().getId());
                 throw new InsufficientAuthenticationException("Usuario Inativo, favor ativar no link enviado para o email");
             }
