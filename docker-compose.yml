@@ -6,7 +6,7 @@ services:
     ports:
       - 8080:8080
     environment:
-      - EMAIL_USERNAME=financaslh@gmail.com
+      - EMAIL_USERNAME=teste@gmail.com
       - EMAIL_PASSWORD=abcd1234
     depends_on:
       - databasepg
