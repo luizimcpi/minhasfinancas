@@ -4,6 +4,8 @@ import com.devlhse.minhasfinancas.model.entity.CustomUserDetails;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.model.repository.UsuarioRepository;
 import com.devlhse.minhasfinancas.service.EmailService;
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,16 +20,13 @@ import static com.devlhse.minhasfinancas.utils.RandomUtils.getSixDigitsRandomNum
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private UsuarioRepository repository;
     private EmailService emailService;
 
-    public UserDetailsServiceImpl(UsuarioRepository repository, EmailService emailService) {
-        this.repository = repository;
-        this.emailService = emailService;
-    }
-
+    @SneakyThrows
     @Override
     public UserDetails loadUserByUsername(String email) {
         Optional<Usuario> usuario = repository.findByEmail(email);
