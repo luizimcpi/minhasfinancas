@@ -2,29 +2,29 @@ package com.devlhse.minhasfinancas.service.impl;
 
 import com.devlhse.minhasfinancas.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.UnsupportedEncodingException;
 
 @Service
 @Slf4j
-public class EmailServiceImpl implements EmailService {
+public class GmailServiceImpl implements EmailService {
 
-    @Value("${from.email.address}")
+    private JavaMailSender mailSender;
     private String fromEmailAddress;
 
-    @Autowired
-    private JavaMailSender mailSender;
+    public GmailServiceImpl(JavaMailSender mailSender, @Value("${from.email.address}") String fromEmailAddress) {
+        this.mailSender = mailSender;
+        this.fromEmailAddress = fromEmailAddress;
+    }
 
     @Async
-    public void enviarEmail(String destinatario, String titulo, String mensagem) throws MessagingException, UnsupportedEncodingException {
+    @Override
+    public void enviarEmail(String destinatario, String titulo, String mensagem) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);
@@ -36,7 +36,6 @@ public class EmailServiceImpl implements EmailService {
             log.info("Sucesso ao enviar email para o destinatario: {}", destinatario);
         } catch (Exception e){
             log.warn("Erro ao enviar mensagem para destinario: {} erro: {}", destinatario, e.getMessage());
-            throw e;
         }
 
     }
