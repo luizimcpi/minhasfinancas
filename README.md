@@ -44,11 +44,6 @@ docker-compose up
 ./mvnw clean package
 ```
 
-## TODO
-```
-- Criar logs e rastreabilidade com ELK
-```
-
 ### Versões Geradas seguindo semver.org
 
 ```
