@@ -1,5 +1,7 @@
 # Minhas Finanças
 [![Build Status](https://travis-ci.org/luizimcpi/minhasfinancas.svg?branch=master)](https://travis-ci.org/luizimcpi/minhasfinancas)
+[![Maven Package](https://github.com/luizimcpi/minhasfinancas/actions/workflows/maven-publish.yml/badge.svg)](https://github.com/luizimcpi/minhasfinancas/actions/workflows/maven-publish.yml)
+
 ```
 Projeto para controle de finanças pessoais utilizando as seguintes tecnologias:
 ```
