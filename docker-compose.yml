@@ -6,8 +6,7 @@ services:
     ports:
       - 8080:8080
     environment:
-      - EMAIL_USERNAME=<SMTP_AWS_USERNAME>
-      - EMAIL_PASSWORD=<SMTP_AWS_PASSWORD>
+      - SENDGRID_API_KEY=<your_api_key>
     depends_on:
       - databasepg
   databasepg:

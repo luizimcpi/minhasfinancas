@@ -1,11 +1,10 @@
 package com.devlhse.minhasfinancas.utils;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 public final class RandomUtils {
     public static String getSixDigitsRandomNumberString() {
-        Random rnd = new Random();
-        int number = rnd.nextInt(999999);
+        int number = new SecureRandom().nextInt(999999);
         return String.format("%06d", number);
     }
 }
