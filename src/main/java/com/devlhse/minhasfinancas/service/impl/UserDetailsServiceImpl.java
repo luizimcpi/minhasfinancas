@@ -32,12 +32,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Optional<Usuario> usuario = repository.findByEmail(email);
 
         if (usuario.isPresent()){
-            if(!usuario.get().isAtivo()) {
+            if(!usuario.get().isValido()) {
                 final var pin = getSixDigitsRandomNumberString();
                 log.warn("Usuario id: {} está inativo publicando evento de envio email.", usuario.get().getId());
-                emailService.enviarEmail(email,
-                        "Ativação de usuário - Minhas Finanças",
-                        "Informe o seguinte código de segurança na página de login para ativar seu usuário: <b>" + pin + "</b>. Este código expira em 1 hora.");
+//                emailService.enviarEmail(email,
+//                        "Ativação de usuário - Minhas Finanças",
+//                        "Informe o seguinte código de segurança na página de login para ativar seu usuário: <b>" + pin + "</b>. Este código expira em 1 hora.");
                 log.warn("Usuario id: {} está inativo registrando controle pin.", usuario.get().getId());
                 criadorControlePin.criaControlePin(email, pin);
                 throw new InsufficientAuthenticationException("Usuario Inativo, favor ativar no link enviado para o email");

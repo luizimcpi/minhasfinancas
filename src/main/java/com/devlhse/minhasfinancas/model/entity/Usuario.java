@@ -48,4 +48,8 @@ public class Usuario {
 	@Column( name = "data_cadastro")
 	@CreationTimestamp
 	private LocalDateTime dataCadastro;
+
+	@Column( name = "valido")
+	@JsonIgnore
+	private boolean valido;
 }
