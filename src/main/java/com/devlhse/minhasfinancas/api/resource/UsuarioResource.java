@@ -48,4 +48,10 @@ public class UsuarioResource {
         BigDecimal saldo = lancamentoService.obterSaldoPorUsuario(usuarioId);
         return ResponseEntity.ok(saldo);
     }
+
+    @GetMapping("validar")
+    public ResponseEntity validarUsuario(@RequestParam("code") String code){
+        service.validar(code);
+        return new ResponseEntity("Usuário verificado com sucesso! Você ja pode fazer o login!", HttpStatus.OK);
+    }
 }

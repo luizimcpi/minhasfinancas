@@ -28,7 +28,7 @@ public class SendgridServiceImpl implements EmailService {
 
         Email from = new Email("luizimcpi@gmail.com");
         Email to = new Email(destinatario);
-        Content content = new Content("text/plain", mensagem);
+        Content content = new Content("text/html", mensagem);
         Mail mail = new Mail(from, titulo, to, content);
 
         SendGrid sg = new SendGrid(System.getenv("SENDGRID_API_KEY"));

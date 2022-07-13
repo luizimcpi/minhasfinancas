@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Optional;
 
 import static com.devlhse.minhasfinancas.utils.RandomUtils.getSixDigitsRandomNumberString;
@@ -32,12 +33,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Optional<Usuario> usuario = repository.findByEmail(email);
 
         if (usuario.isPresent()){
-            if(!usuario.get().isValido()) {
+            if(!usuario.get().isAtivo()) {
                 final var pin = getSixDigitsRandomNumberString();
+                final var encodedPin = Base64.getEncoder().encodeToString(pin.getBytes());
                 log.warn("Usuario id: {} está inativo publicando evento de envio email.", usuario.get().getId());
-//                emailService.enviarEmail(email,
-//                        "Ativação de usuário - Minhas Finanças",
-//                        "Informe o seguinte código de segurança na página de login para ativar seu usuário: <b>" + pin + "</b>. Este código expira em 1 hora.");
+                emailService.enviarEmail(email,
+                        "Ativação de usuário - Minhas Finanças",
+                        "<html><head></head><body>Link de validacão <a href=\"http://localhost:8080/api/usuarios/validar?code="+encodedPin+"\">Click</a> este link expira em 1 hora.</body></html>");
                 log.warn("Usuario id: {} está inativo registrando controle pin.", usuario.get().getId());
                 criadorControlePin.criaControlePin(email, pin);
                 throw new InsufficientAuthenticationException("Usuario Inativo, favor ativar no link enviado para o email");
