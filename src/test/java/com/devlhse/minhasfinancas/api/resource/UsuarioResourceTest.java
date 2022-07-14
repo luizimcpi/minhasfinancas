@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @WebMvcTest( controllers = UsuarioResource.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 public class UsuarioResourceTest {
 
     private static final String URL = "/api/usuarios";
