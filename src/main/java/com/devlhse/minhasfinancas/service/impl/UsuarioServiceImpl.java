@@ -2,7 +2,6 @@ package com.devlhse.minhasfinancas.service.impl;
 
 import com.devlhse.minhasfinancas.exception.ConflictException;
 import com.devlhse.minhasfinancas.exception.NotFoundException;
-import com.devlhse.minhasfinancas.exception.RegraNegocioException;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.model.repository.UsuarioRepository;
 import com.devlhse.minhasfinancas.service.CriadorControlePin;
@@ -15,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,7 +40,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 				.nome(usuarioResource.getNome())
 				.email(usuarioResource.getEmail())
 				.senha(passwordEncoder.encode(usuarioResource.getSenha()))
-				.ativo(false)
+				.ativo(true)
+				.valido(false)
 				.build();
 
 		validarEmail(usuario.getEmail());
@@ -80,9 +81,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 		if(optionalUsuario.isPresent()){
 			final var usuarioBD = optionalUsuario.get();
 
-			Usuario usuarioValidado = Usuario.builder()
-					.ativo(true)
+			final var usuarioValidado = Usuario.builder()
+					.ativo(usuarioBD.isAtivo())
+					.valido(true)
 					.dataCadastro(usuarioBD.getDataCadastro())
+					.dataAlteracao(LocalDateTime.now())
 					.nome(usuarioBD.getNome())
 					.email(usuarioBD.getEmail())
 					.id(usuarioBD.getId())

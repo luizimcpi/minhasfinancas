@@ -3,8 +3,6 @@ package com.devlhse.minhasfinancas.service.impl;
 import com.devlhse.minhasfinancas.model.entity.CustomUserDetails;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.model.repository.UsuarioRepository;
-import com.devlhse.minhasfinancas.service.CriadorControlePin;
-import com.devlhse.minhasfinancas.service.EmailService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -14,10 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Optional;
-
-import static com.devlhse.minhasfinancas.utils.RandomUtils.getSixDigitsRandomNumberString;
 
 @Service
 @Slf4j
@@ -31,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Optional<Usuario> usuario = repository.findByEmail(email.trim());
 
         if (usuario.isPresent()){
-            if(!usuario.get().isAtivo()) {
+            if(!usuario.get().isValido()) {
                 throw new InsufficientAuthenticationException("Usuario Inativo, favor ativar no link enviado para o email");
             }
             var userDetails = new CustomUserDetails(usuario.get(),

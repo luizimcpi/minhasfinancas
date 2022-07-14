@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,8 +45,16 @@ public class Usuario {
 	@JsonIgnore
 	private boolean ativo;
 
+	@Column( name = "valido")
+	@JsonIgnore
+	private boolean valido;
+
 	@JsonIgnore
 	@Column( name = "data_cadastro")
 	@CreationTimestamp
 	private LocalDateTime dataCadastro;
+
+	@Column( name = "data_alteracao")
+	@UpdateTimestamp
+	private LocalDateTime dataAlteracao;
 }
