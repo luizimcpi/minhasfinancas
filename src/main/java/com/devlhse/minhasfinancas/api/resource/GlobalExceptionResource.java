@@ -1,10 +1,9 @@
 package com.devlhse.minhasfinancas.api.resource;
 
-import com.devlhse.minhasfinancas.exception.AutenticacaoException;
-import com.devlhse.minhasfinancas.exception.AutorizacaoException;
-import com.devlhse.minhasfinancas.exception.NotFoundException;
-import com.devlhse.minhasfinancas.exception.RegraNegocioException;
+import com.devlhse.minhasfinancas.exception.*;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -25,6 +24,28 @@ public class GlobalExceptionResource {
     @ExceptionHandler(RegraNegocioException.class)
     public ResponseEntity<ErrorMessageResponse> handleRegraNegocioException(Exception e) {
         return new ResponseEntity<>(getErrorMessageResponse(e), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ValidacaoUsuarioException.class)
+    public ResponseEntity<String> handleValidacaoUsuarioException(Exception e) {
+        String content =
+                "<header>"
+                        + "<h1><span>"+e.getMessage()+"</span></h1>"
+                        + "</header>";
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_HTML);
+        return new ResponseEntity<>(content, responseHeaders, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PinNotFoundException.class)
+    public ResponseEntity<String> handlePinNotFoundException(Exception e) {
+        String content =
+                "<header>"
+                        + "<h1><span>"+e.getMessage()+"</span></h1>"
+                        + "</header>";
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_HTML);
+        return new ResponseEntity<>(content, responseHeaders, HttpStatus.NOT_FOUND);
     }
 
     private ErrorMessageResponse getErrorMessageResponse(Exception e) {

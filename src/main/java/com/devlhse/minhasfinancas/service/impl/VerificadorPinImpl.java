@@ -1,7 +1,9 @@
 package com.devlhse.minhasfinancas.service.impl;
 
 import com.devlhse.minhasfinancas.exception.NotFoundException;
+import com.devlhse.minhasfinancas.exception.PinNotFoundException;
 import com.devlhse.minhasfinancas.exception.RegraNegocioException;
+import com.devlhse.minhasfinancas.exception.ValidacaoUsuarioException;
 import com.devlhse.minhasfinancas.model.entity.ControlePin;
 import com.devlhse.minhasfinancas.model.repository.ControlePinRepository;
 import com.devlhse.minhasfinancas.service.CriadorControlePin;
@@ -29,12 +31,12 @@ public class VerificadorPinImpl implements VerificadorPin {
             var now = LocalDateTime.now();
             var controlePin = optionalControlePin.get();
             if(now.isAfter(controlePin.getDataExpiracao())){
-                throw new RegraNegocioException("Link expirado");
+                throw new ValidacaoUsuarioException("Link para ativacao expirado");
             }
             repository.delete(controlePin);
             return controlePin.getEmail();
         } else {
-            throw new NotFoundException("Não foi encontrado controle pin para o codigo informado.");
+            throw new PinNotFoundException("Não foi encontrado registro para o codigo informado.");
         }
     }
 }
