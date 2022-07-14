@@ -25,8 +25,6 @@ import static com.devlhse.minhasfinancas.utils.RandomUtils.getSixDigitsRandomNum
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private UsuarioRepository repository;
-    private EmailService emailService;
-    private CriadorControlePin criadorControlePin;
 
     @Override
     public UserDetails loadUserByUsername(String email) {
@@ -34,14 +32,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         if (usuario.isPresent()){
             if(!usuario.get().isAtivo()) {
-                final var pin = getSixDigitsRandomNumberString();
-                final var encodedPin = Base64.getEncoder().encodeToString(pin.getBytes());
-                log.warn("Usuario id: {} está inativo publicando evento de envio email.", usuario.get().getId());
-                emailService.enviarEmail(email,
-                        "Ativação de usuário - Minhas Finanças",
-                        "<html><head></head><body>Link de validacão <a href=\"http://localhost:8080/api/usuarios/validar?code="+encodedPin+"\">Click</a> este link expira em 1 hora.</body></html>");
-                log.warn("Usuario id: {} está inativo registrando controle pin.", usuario.get().getId());
-                criadorControlePin.criaControlePin(email, pin);
                 throw new InsufficientAuthenticationException("Usuario Inativo, favor ativar no link enviado para o email");
             }
             var userDetails = new CustomUserDetails(usuario.get(),

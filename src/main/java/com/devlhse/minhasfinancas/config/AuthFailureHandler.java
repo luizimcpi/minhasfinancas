@@ -14,7 +14,7 @@ public class AuthFailureHandler implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e)
             throws IOException {
         httpServletResponse.setContentType("application/json");
-        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
         httpServletResponse.getOutputStream().println("{ " + "\"message\": Username e/ou senha invalido(s), ou usuario nao validado, verificar link de ativacao no email. }");
     }
 }

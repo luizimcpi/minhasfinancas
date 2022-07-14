@@ -26,6 +26,11 @@ public class GlobalExceptionResource {
         return new ResponseEntity<>(getErrorMessageResponse(e), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorMessageResponse> handleConflictException(Exception e) {
+        return new ResponseEntity<>(getErrorMessageResponse(e), HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(ValidacaoUsuarioException.class)
     public ResponseEntity<String> handleValidacaoUsuarioException(Exception e) {
         String content =

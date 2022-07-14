@@ -1,11 +1,16 @@
 package com.devlhse.minhasfinancas.service.impl;
 
+import com.devlhse.minhasfinancas.exception.ConflictException;
 import com.devlhse.minhasfinancas.exception.NotFoundException;
 import com.devlhse.minhasfinancas.exception.RegraNegocioException;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.model.repository.UsuarioRepository;
+import com.devlhse.minhasfinancas.service.CriadorControlePin;
+import com.devlhse.minhasfinancas.service.EmailService;
 import com.devlhse.minhasfinancas.service.UsuarioService;
 import com.devlhse.minhasfinancas.service.VerificadorPin;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,21 +19,19 @@ import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.devlhse.minhasfinancas.utils.RandomUtils.getSixDigitsRandomNumberString;
+
 @Service
+@Slf4j
+@AllArgsConstructor
 public class UsuarioServiceImpl implements UsuarioService {
 
 	private PasswordEncoder passwordEncoder;
 	private UsuarioRepository repository;
 
 	private VerificadorPin verificadorPin;
-
-	public UsuarioServiceImpl(PasswordEncoder passwordEncoder,
-							  UsuarioRepository repository,
-							  VerificadorPin verificadorPin) {
-		this.passwordEncoder = passwordEncoder;
-		this.repository = repository;
-		this.verificadorPin = verificadorPin;
-	}
+	private EmailService emailService;
+	private CriadorControlePin criadorControlePin;
 
 	@Override
 	@Transactional
@@ -39,7 +42,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 				.senha(passwordEncoder.encode(usuarioResource.getSenha()))
 				.ativo(false)
 				.build();
+
 		validarEmail(usuario.getEmail());
+
+		final var email = usuario.getEmail();
+		final var pin = getSixDigitsRandomNumberString();
+		final var encodedPin = Base64.getEncoder().encodeToString(pin.getBytes());
+		log.warn("Usuario email: {} está inativo publicando evento de envio email de ativacao.", usuario.getEmail());
+		emailService.enviarEmail(email,
+				"Ativação de usuário - Minhas Finanças",
+				"<html><head></head><body>Link de validacão <a href=\"http://localhost:8080/api/usuarios/validar?code="+encodedPin+"\">Click</a> este link expira em 1 hora.</body></html>");
+		criadorControlePin.criaControlePin(email, pin);
+
 		return repository.save(usuario);
 	}
 
@@ -47,7 +61,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public void validarEmail(String email) {
 		boolean existe = repository.existsByEmail(email);
 		if(existe){
-			throw new RegraNegocioException("Já existe um usuário cadastrado com este email.");
+			throw new ConflictException("Já existe um usuário cadastrado com este email.");
 		}
 	}
 
