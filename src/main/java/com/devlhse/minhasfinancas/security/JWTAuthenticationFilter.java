@@ -2,9 +2,10 @@ package com.devlhse.minhasfinancas.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.devlhse.minhasfinancas.api.dto.UsuarioDTO;
+import com.devlhse.minhasfinancas.api.dto.UsuarioLoginDTO;
 import com.devlhse.minhasfinancas.config.JwtConfig;
 import com.devlhse.minhasfinancas.model.entity.CustomUserDetails;
-import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,8 +39,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res){
         try {
-            Usuario creds = new ObjectMapper()
-                    .readValue(req.getInputStream(), Usuario.class);
+            UsuarioLoginDTO creds = new ObjectMapper()
+                    .readValue(req.getInputStream(), UsuarioLoginDTO.class);
 
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
