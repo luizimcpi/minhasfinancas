@@ -52,7 +52,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		log.warn("Usuario email: {} está inativo publicando evento de envio email de ativacao.", usuario.getEmail());
 		emailService.enviarEmail(email,
 				"Ativação de usuário - Minhas Finanças",
-				"<html><head></head><body>Link de validacão <a href=\"http://localhost:8080/api/usuarios/validar?code="+encodedPin+"\">aqui</a> este link expira em 1 hora.</body></html>");
+				"<html><head></head><body>Link de validacão <a href=\"https://lh-financas-api.herokuapp.com/api/usuarios/validar?code="+encodedPin+"\">aqui</a> este link expira em 1 hora.</body></html>");
 		criadorControlePin.criaControlePin(email, pin);
 
 		return repository.save(usuario);
