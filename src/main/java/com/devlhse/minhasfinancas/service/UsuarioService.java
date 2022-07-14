@@ -11,4 +11,6 @@ public interface UsuarioService {
 	void validarEmail(String email);
 
 	Usuario obterPorId(UUID id);
+
+	void validar(String code);
 }

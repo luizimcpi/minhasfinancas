@@ -6,7 +6,9 @@ import com.devlhse.minhasfinancas.service.LancamentoService;
 import com.devlhse.minhasfinancas.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,5 +49,19 @@ public class UsuarioResource {
 
         BigDecimal saldo = lancamentoService.obterSaldoPorUsuario(usuarioId);
         return ResponseEntity.ok(saldo);
+    }
+
+    @GetMapping("validar")
+    public ResponseEntity validarUsuario(@RequestParam("code") String code){
+        service.validar(code);
+
+        String content =
+                "<header>"
+                        + "<h1><span>Usuario verificado com sucesso! Voce ja pode fazer o login!</span></h1>"
+                        + "</header>";
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_HTML);
+
+        return new ResponseEntity<>(content, responseHeaders, HttpStatus.OK);
     }
 }

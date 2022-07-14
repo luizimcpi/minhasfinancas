@@ -1,5 +1,6 @@
 package com.devlhse.minhasfinancas.service;
 
+import com.devlhse.minhasfinancas.exception.ConflictException;
 import com.devlhse.minhasfinancas.exception.RegraNegocioException;
 import com.devlhse.minhasfinancas.model.entity.Usuario;
 import com.devlhse.minhasfinancas.model.repository.UsuarioRepository;
@@ -14,10 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UsuarioServiceTest {
@@ -31,6 +30,12 @@ public class UsuarioServiceTest {
 	@Mock
 	PasswordEncoder passwordEncoder;
 
+	@Mock
+	EmailService emailService;
+
+	@Mock
+	CriadorControlePin criadorControlePin;
+
 	@Test
 	public void deveValidarEmail(){
 		var validEmail = "email@email.com";
@@ -43,7 +48,7 @@ public class UsuarioServiceTest {
 	public void deveLancarErroAoValidarEmailQuandoExistirEmailCadastrado(){
 		var validEmail = "email@email.com";
 		when(repository.existsByEmail(validEmail)).thenReturn(true);
-		Assertions.assertThrows(RegraNegocioException.class, () -> {
+		Assertions.assertThrows(ConflictException.class, () -> {
 			service.validarEmail(validEmail);
 		});
 	}
@@ -61,6 +66,8 @@ public class UsuarioServiceTest {
 		assertEquals("nome", usuarioSalvo.getNome());
 		assertEquals("email@email.com", usuarioSalvo.getEmail());
 		assertEquals("senha", usuarioSalvo.getSenha());
+		verify(emailService, times(1)).enviarEmail(anyString(), anyString(), anyString());
+		verify(criadorControlePin, times(1)).criaControlePin(anyString(), anyString());
 	}
 
 	@Test
@@ -69,10 +76,12 @@ public class UsuarioServiceTest {
 		when(repository.existsByEmail(validEmail)).thenReturn(true);
 		Usuario usuario = Usuario.builder().nome("nome").email(validEmail).senha("senha").build();
 
-		Assertions.assertThrows(RegraNegocioException.class, () -> {
+		Assertions.assertThrows(ConflictException.class, () -> {
 			service.salvar(usuario);
 		});
 
-		verify(repository, times(0)).save(usuario);
+		verify(repository, never()).save(usuario);
+		verify(emailService, never()).enviarEmail(anyString(), anyString(), anyString());
+		verify(criadorControlePin, never()).criaControlePin(anyString(), anyString());
 	}
 }
