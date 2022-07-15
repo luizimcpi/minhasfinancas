@@ -1,5 +1,5 @@
 # Minhas Finanças
-[![Maven Package](https://github.com/luizimcpi/minhasfinancas/actions/workflows/main.yml/badge.svg)](https://github.com/luizimcpi/minhasfinancas/actions/workflows/main.yml)
+[![Maven CI/CD](https://github.com/luizimcpi/minhasfinancas/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/luizimcpi/minhasfinancas/actions/workflows/main.yml)
 
 ```
 Projeto para controle de finanças pessoais utilizando as seguintes tecnologias:
