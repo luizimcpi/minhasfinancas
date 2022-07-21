@@ -53,3 +53,27 @@ docker-compose up
 ```
 https://semver.org/
 ```
+
+### Sonarqube
+
+Rodar esses comandos no terminal  para ajustar a quantidade de memória virtual do host (isso pq a imagem do sonar utiliza um elasticsearch e exige que isso seja adequado -> https://hub.docker.com/_/sonarqube/)
+```
+sudo sysctl -w vm.max_map_count=262144
+sudo sysctl -w fs.file-max=65536
+ulimit -n 65536
+ulimit -u 4096
+```
+Depois basta subir o docker-compose (diretorio sonarqube do projeto)
+ai acessando pelo browser localhost:9000 vc vai ter que alterar a senha inicial
+usuario inicial: admin
+senha inicial: admin
+Ai cria um projeto manualmente, ele vai te dar um comando parecido com esse aqui pra rodar na raiz do projeto que quiser analisar:
+
+```
+./mvnw clean verify sonar:sonar \
+  -Dsonar.projectKey=minhasfinancas \
+  -Dsonar.host.url=http://localhost:9000 \
+  -Dsonar.login=YOUR_SONAR_GENERATED_TOKEN
+```
+
+Feita a análise ele vai jogar o relatório pro sonar ai vai ta la disponivel os dados pra analise ai só verificar no localhost:9000
