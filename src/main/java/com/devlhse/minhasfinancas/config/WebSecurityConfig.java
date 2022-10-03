@@ -3,10 +3,8 @@ package com.devlhse.minhasfinancas.config;
 import com.devlhse.minhasfinancas.security.JWTAuthenticationFilter;
 import com.devlhse.minhasfinancas.security.JWTAuthorizationFilter;
 import com.devlhse.minhasfinancas.service.impl.UserDetailsServiceImpl;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,9 +16,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-
-import java.util.List;
 
 import static com.devlhse.minhasfinancas.security.constants.SecurityConstants.*;
 
@@ -65,22 +60,20 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public FilterRegistrationBean<CorsFilter> corsFilter(){
-        List<String> all = List.of("*");
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedMethods(all);
-        configuration.setAllowedOrigins(all);
-        configuration.setAllowedHeaders(all);
-        configuration.setAllowCredentials(true);
+    CorsConfigurationSource corsConfigurationSource() {
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
+        corsConfiguration.addAllowedMethod(HttpMethod.POST);
+        corsConfiguration.addAllowedMethod(HttpMethod.GET);
+        corsConfiguration.addAllowedMethod(HttpMethod.PUT);
+        corsConfiguration.addAllowedMethod(HttpMethod.PATCH);
+        corsConfiguration.addAllowedMethod(HttpMethod.DELETE);
+        corsConfiguration.addAllowedOrigin("https://luizimcpi.github.io/financaspwa");
+        source.registerCorsConfiguration("/**", corsConfiguration);
 
-        CorsFilter corsFilter = new CorsFilter(source);
-        FilterRegistrationBean<CorsFilter> filter = new FilterRegistrationBean<>(corsFilter);
-        filter.setOrder(Ordered.HIGHEST_PRECEDENCE);
 
-        return filter;
+        return source;
     }
 
 
