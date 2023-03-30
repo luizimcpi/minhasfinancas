@@ -8,7 +8,7 @@ LABEL maintainer="luizhenrique.se@gmail.com"
 VOLUME /tmp
 
 # The application's jar file
-ARG JAR_FILE=target/minhasfinancas-*.jar
+ARG JAR_FILE=jars/minhasfinancas-*.jar
 
 # Add the application's jar to the container
 ADD ${JAR_FILE} minhasfinancas.jar
