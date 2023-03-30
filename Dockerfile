@@ -13,5 +13,7 @@ ARG JAR_FILE=jars/minhasfinancas-*.jar
 # Add the application's jar to the container
 ADD ${JAR_FILE} minhasfinancas.jar
 
+EXPOSE 8080
+
 # Run the jar file
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Dspring.profiles.active=docker","-jar","/minhasfinancas.jar"]
