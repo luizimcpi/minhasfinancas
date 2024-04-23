@@ -6,7 +6,11 @@ services:
     ports:
       - 8080:8080
     environment:
-      - SENDGRID_API_KEY=<your_api_key>
+      - SENDGRID_API_KEY=test
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=123456
+      - DB_URL=jdbc:postgresql://databasepg:5432/postgres
+      - JWT_SECRET=5cf1b282-7d71-492b-8ca6-e55aa89fdd76
     depends_on:
       - databasepg
   databasepg:
@@ -16,4 +20,4 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
     ports:
-      - "5433:5432"
+      - "5432:5432"
