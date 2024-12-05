@@ -9,7 +9,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,34 +45,36 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(MAIN_URL, SIGN_UP_URL, SIGN_UP_URL_WITH_ROOT, USER_VERIFY_URL, USER_VERIFY_URL_WITH_ROOT).permitAll()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                        .exceptionHandling(e -> new AuthFailureHandler());
 
+        http.cors().and().csrf().disable().authorizeRequests()
+                .antMatchers(MAIN_URL, SIGN_UP_URL, SIGN_UP_URL_WITH_ROOT, USER_VERIFY_URL, USER_VERIFY_URL_WITH_ROOT).permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .addFilter(new JWTAuthenticationFilter(authenticationManager(http), jwtConfig))
+                .addFilter(new JWTAuthorizationFilter(authenticationManager(http), jwtConfig))
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .exceptionHandling().authenticationEntryPoint(new AuthFailureHandler());
         return http.build();
     }
 
-//    @Bean
-//    CorsConfigurationSource corsConfigurationSource() {
-//        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//
-//        CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
-//        corsConfiguration.addAllowedMethod(HttpMethod.POST);
-//        corsConfiguration.addAllowedMethod(HttpMethod.GET);
-//        corsConfiguration.addAllowedMethod(HttpMethod.PUT);
-//        corsConfiguration.addAllowedMethod(HttpMethod.PATCH);
-//        corsConfiguration.addAllowedMethod(HttpMethod.DELETE);
-//        corsConfiguration.addAllowedOrigin("*");
-//        source.registerCorsConfiguration("/**", corsConfiguration);
-//
-//
-//        return source;
-//    }
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
+        corsConfiguration.addAllowedMethod(HttpMethod.POST);
+        corsConfiguration.addAllowedMethod(HttpMethod.GET);
+        corsConfiguration.addAllowedMethod(HttpMethod.PUT);
+        corsConfiguration.addAllowedMethod(HttpMethod.PATCH);
+        corsConfiguration.addAllowedMethod(HttpMethod.DELETE);
+        corsConfiguration.addAllowedOrigin("*");
+        source.registerCorsConfiguration("/**", corsConfiguration);
+
+
+        return source;
+    }
 
 
 }
