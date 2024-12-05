@@ -19,7 +19,7 @@ Projeto para controle de finanças pessoais utilizando as seguintes tecnologias:
 docker run --name local-postgres -e "POSTGRES_PASSWORD=123456" -p 5432:5432 -v /home/SEU_USUARIO/Desenvolvimento/PostgreSQL:/var/lib/postgresql/data -d postgres
 
 1 - Alterar as credenciais da base de dados no arquivo application.properties
-2 - Esta aplicação utiliza sendgrid para enviar os emails , configure uma conta para obter o SENDGRID_API_KEY
+2 - Esta aplicação utiliza sendgrid para enviar os emails , configure uma conta para obter o SENDGRID_API_KEY * DISABLED *
 3 - Executar o arquivo MinhasfinancasApplication.java
 
 ou 
