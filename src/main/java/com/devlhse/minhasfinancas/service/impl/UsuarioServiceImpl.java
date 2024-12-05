@@ -41,19 +41,19 @@ public class UsuarioServiceImpl implements UsuarioService {
 				.email(usuarioResource.getEmail())
 				.senha(passwordEncoder.encode(usuarioResource.getSenha()))
 				.ativo(true)
-				.valido(false)
+				.valido(true)
 				.build();
 
 		validarEmail(usuario.getEmail());
 
-		final var email = usuario.getEmail();
-		final var pin = getSixDigitsRandomNumberString();
-		final var encodedPin = Base64.getEncoder().encodeToString(pin.getBytes());
-		log.warn("Usuario email: {} está inativo publicando evento de envio email de ativacao.", usuario.getEmail());
-		emailService.enviarEmail(email,
-				"Ativação de usuário - Minhas Finanças",
-				"<html><head></head><body>Link de validacão <a href=\"https://lh-financas-api.herokuapp.com/api/usuarios/validar?code="+encodedPin+"\">aqui</a> este link expira em 1 hora.</body></html>");
-		criadorControlePin.criaControlePin(email, pin);
+//		final var email = usuario.getEmail();
+//		final var pin = getSixDigitsRandomNumberString();
+//		final var encodedPin = Base64.getEncoder().encodeToString(pin.getBytes());
+//		log.warn("Usuario email: {} está inativo publicando evento de envio email de ativacao.", usuario.getEmail());
+//		emailService.enviarEmail(email,
+//				"Ativação de usuário - Minhas Finanças",
+//				"<html><head></head><body>Link de validacão <a href=\"https://lh-financas-api.herokuapp.com/api/usuarios/validar?code="+encodedPin+"\">aqui</a> este link expira em 1 hora.</body></html>");
+//		criadorControlePin.criaControlePin(email, pin);
 
 		return repository.save(usuario);
 	}
