@@ -5,8 +5,8 @@
 Projeto para controle de finanças pessoais utilizando as seguintes tecnologias:
 ```
 - [LOMBOK](https://projectlombok.org/)
-- [SPRING BOOT](https://spring.io/projects/spring-boot)
-- [JAVA 11](https://www.oracle.com/br/java/technologies/javase-jdk11-downloads.html)
+- [SPRING BOOT 3.x.x](https://spring.io/projects/spring-boot)
+- [JAVA 17](https://www.oracle.com/br/java/technologies/javase-jdk11-downloads.html)
 - [FLYWAY MIGRATION TOOL](https://flywaydb.org/)
 - [OTJ-PG-EMBEDDED](https://github.com/opentable/otj-pg-embedded)
 - [SENDGRID](https://sendgrid.com/)

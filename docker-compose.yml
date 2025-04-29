@@ -1,14 +1,14 @@
 version: '3.4'
 services:
-  app:
-    image: minhasfinancas
-    container_name: minhas-financas-api
-    ports:
-      - 8080:8080
-    environment:
-      - SENDGRID_API_KEY=<your_api_key>
-    depends_on:
-      - databasepg
+#  app:
+#    image: minhasfinancas
+#    container_name: minhas-financas-api
+#    ports:
+#      - 8080:8080
+#    environment:
+#      - SENDGRID_API_KEY=<your_api_key>
+#    depends_on:
+#      - databasepg
   databasepg:
     container_name: databasepg
     image: postgres
