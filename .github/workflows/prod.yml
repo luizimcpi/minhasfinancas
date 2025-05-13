@@ -21,16 +21,16 @@ jobs:
       - name: Login Docker Hub
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p '${{secrets.DOCKER_PASSWORD}}'
       - name: Build docker image
-        run: docker build -t luizimcpi/minhasfinancas .
+        run: docker build -t luizimcpi/minhasfinancas:1.0.0 .
       - name: Push image docker
-        run: docker push luizimcpi/minhasfinancas
+        run: docker push luizimcpi/minhasfinancas:1.0.0
 
   deploy:
     needs: build
     runs-on: self-hosted
     steps:
       - name: Pull image from docker hub
-        run: docker pull luizimcpi/minhasfinancas:latest
+        run: docker pull luizimcpi/minhasfinancas:1.0.0
       - name: Remove old docker container
         run: docker rm -f minhasfinancas
       - name: Run docker container
