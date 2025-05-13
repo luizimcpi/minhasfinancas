@@ -136,7 +136,6 @@ public class LancamentoServiceImpl implements LancamentoService {
             repository.buscarPorUsuarioEMesEAno(usuarioId, mesAtual, anoAtual).forEach(lancamento -> {
                 var lancamentoCopiado = Lancamento.builder()
                         .ano(mesAtual == 12 ? lancamento.getAno() + 1 : anoAtual)
-                        .id(UUID.randomUUID())
                         .mes(mesAtual == 12 ? 1 : mesAtual + 1)
                         .dataAlteracao(novaDataControle)
                         .dataCadastro(novaDataControle)
