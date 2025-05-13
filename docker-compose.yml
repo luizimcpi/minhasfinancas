@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   app:
-    image: minhasfinancas
+    image: minhasfinancas:1.0.0
     container_name: minhas-financas-api
     ports:
       - 8080:8080

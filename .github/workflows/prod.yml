@@ -15,23 +15,23 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
       - name: Build project
         run: mvn clean install -DskipTests
       - name: Login Docker Hub
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p '${{secrets.DOCKER_PASSWORD}}'
       - name: Build docker image
-        run: docker build -t luizimcpi/minhasfinancas .
+        run: docker build -t luizimcpi/minhasfinancas:1.0.0 .
       - name: Push image docker
-        run: docker push luizimcpi/minhasfinancas
+        run: docker push luizimcpi/minhasfinancas:1.0.0
 
   deploy:
     needs: build
     runs-on: self-hosted
     steps:
       - name: Pull image from docker hub
-        run: docker pull luizimcpi/minhasfinancas:latest
+        run: docker pull luizimcpi/minhasfinancas:1.0.0
       - name: Remove old docker container
         run: docker rm -f minhasfinancas
       - name: Run docker container
-        run: docker run -d -p 8080:8080 -e DB_USERNAME=${{secrets.DB_USERNAME}} -e DB_PASSWORD='${{secrets.DB_PASSWORD}}' -e DB_URL=${{secrets.DB_URL}} -e JWT_SECRET=${{secrets.JWT_SECRET}} --name minhasfinancas luizimcpi/minhasfinancas
+        run: docker run -d -p 8080:8080 -e DB_USERNAME=${{secrets.DB_USERNAME}} -e DB_PASSWORD='${{secrets.DB_PASSWORD}}' -e DB_URL=${{secrets.DB_URL}} -e JWT_SECRET=${{secrets.JWT_SECRET}} --name minhasfinancas luizimcpi/minhasfinancas:1.0.0
